@@ -51,8 +51,8 @@ export default function SectionDetailPage() {
   return (
     <div className="flex flex-col pt-0 pb-5">
       {/* Detail Hero */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-4 mb-4 mt-4">
-        <h1 className="font-serif text-brand text-[32px] sm:text-[40px] leading-[32px] sm:leading-[40px] text-left">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-4 mb-4 mt-0">
+        <h1 className="font-serif text-brand text-[32px] sm:text-[40px] leading-[32px] sm:leading-[40px] text-left sm:w-[350px]">
           Image Split Scroll Animation in Framer
         </h1>
 
@@ -125,7 +125,7 @@ export default function SectionDetailPage() {
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-10 justify-center">
+          <div className="flex flex-wrap gap-2 mb-10 mt-16 justify-center">
             <Tag>GSAP</Tag>
             <Tag>Scroll Animation</Tag>
             <Tag>Framer</Tag>

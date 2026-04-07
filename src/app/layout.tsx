@@ -36,8 +36,8 @@ export default function RootLayout({
         className={`${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col bg-background text-primary-text font-mono selection:bg-brand/10 selection:text-brand">
-          <header className="sticky top-0 z-50 px-5 pt-5 pb-0 bg-background/80 backdrop-blur-md">
-            <div className="max-w-[1920px] mx-auto flex justify-between items-center h-10">
+          <header className="sticky top-0 z-50 pt-5 pb-0 bg-background/80 backdrop-blur-md">
+            <div className="max-w-[1920px] mx-auto flex justify-between items-center h-10 px-5">
               <Link href="/" className="h-full flex items-center">
                 <Image 
                   src="/logo.png" 
@@ -78,7 +78,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="flex-1 max-w-[1920px] mx-auto w-full p-5">
+          <main className="flex-1 max-w-[1920px] mx-auto w-full px-5 pb-5 pt-4">
             {children}
           </main>
 
