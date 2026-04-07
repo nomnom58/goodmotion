@@ -45,11 +45,11 @@ export default function Home() {
     <div className="flex flex-col pt-0 sm:pt-0">
       {/* Hero Header */}
       <section className="flex flex-col gap-4 mb-6">
-        <h1 className="font-serif text-brand text-[32px] sm:text-[40px] leading-[32px] sm:leading-[40px] sm:w-[350px] text-left">
+        <h1 className="font-serif text-brand text-[40px] leading-[40px] sm:w-[350px] text-left">
           Gap Library for Framer/Web
         </h1>
         <p className="font-mono text-[14px] sm:text-[16px] font-normal text-secondary-text sm:max-w-[450px]">
-          A growing collection of high-end components, for Framer/Web
+          Static designs are no longer enough. GOOD MOTION bridges the gap between high-end design and complex web animation.
         </p>
       </section>
 

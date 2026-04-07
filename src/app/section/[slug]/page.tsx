@@ -52,7 +52,7 @@ export default function SectionDetailPage() {
     <div className="flex flex-col pt-0 pb-5">
       {/* Detail Hero */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-4 mb-4 mt-0">
-        <h1 className="font-serif text-brand text-[32px] sm:text-[40px] leading-[32px] sm:leading-[40px] text-left sm:w-[350px]">
+        <h1 className="font-serif text-brand text-[40px] leading-[40px] text-left sm:w-[350px]">
           Image Split Scroll Animation in Framer
         </h1>
 
@@ -83,13 +83,13 @@ export default function SectionDetailPage() {
           <Share2 size={16} />
         </Button>
         <AuthAction message="Sign in required" className="flex-1">
-          <Button variant="secondary" size="default" borderRadius="16" className="w-full gap-2">
+          <Button variant="secondary" size="default" borderRadius="16" className="w-full flex-1 gap-2">
             <Copy size={16} />
             Webflow
           </Button>
         </AuthAction>
         <AuthAction message="Sign in required" className="flex-1">
-          <Button variant="primary" size="default" borderRadius="none" className="w-full gap-2">
+          <Button variant="primary" size="default" borderRadius="none" className="w-full flex-1 gap-2">
             <FramerIcon size={16} />
             Remix
           </Button>

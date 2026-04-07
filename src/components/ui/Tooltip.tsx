@@ -26,10 +26,10 @@ export function Tooltip({ children, content, open, onOpenChange }: TooltipProps)
       {children}
       {show && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[100] whitespace-nowrap">
-          <div className="bg-brand text-white text-[12px] px-3 py-1.5 rounded-sm font-mono shadow-md animate-in fade-in slide-in-from-bottom-1 duration-200">
+          <div className="bg-[#1F1F1F] text-white text-[12px] px-3 py-1.5 rounded-sm font-mono shadow-md animate-in fade-in slide-in-from-bottom-1 duration-200">
             {content}
             {/* Arrow */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-brand" />
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1F1F1F]" />
           </div>
         </div>
       )}
