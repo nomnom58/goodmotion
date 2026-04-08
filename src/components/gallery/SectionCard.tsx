@@ -24,44 +24,103 @@ export function SectionCard({
   index,
 }: SectionCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isInView, setIsInView] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
+  // Detect mobile device
   useEffect(() => {
-    if (isHovered && videoRef.current && videoUrl) {
-      videoRef.current.play().catch(() => {})
-    } else if (videoRef.current) {
-      videoRef.current.pause()
-      videoRef.current.currentTime = 0
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
     }
-  }, [isHovered, videoUrl])
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Intersection Observer for Mobile Autoplay
+  useEffect(() => {
+    if (!isMobile || !containerRef.current) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting)
+      },
+      { threshold: 0.6 } // Play when 60% of card is visible
+    )
+
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [isMobile])
+
+  // Handle Video Play/Pause
+  useEffect(() => {
+    if (!videoRef.current || !videoUrl) return
+
+    const shouldPlay = isMobile ? isInView : isHovered
+
+    if (shouldPlay) {
+      videoRef.current.play().catch(() => {
+        // Handle potential autoplay restrictions
+      })
+    } else {
+      videoRef.current.pause()
+      // Optimization: Don't resetting currentTime to 0 on mobile for smoother experience
+      if (!isMobile) videoRef.current.currentTime = 0
+    }
+  }, [isHovered, isInView, isMobile, videoUrl])
+
+  // Handle Thumbnail Fallback: If no thumbnailUrl but has videoUrl, 
+  // we use the video itself (static or autoplay)
+  const hasThumbnail = thumbnailUrl && thumbnailUrl !== ''
+  const showVideo = !!videoUrl && (isMobile ? true : isHovered || !hasThumbnail)
 
   return (
     <Link
       href={`/section/${slug}`}
       className="group block transition-all"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
-      <div className="flex flex-col gap-3">
-        {/* Placeholder for 16:9 Image/Video */}
-        <div className="relative aspect-16-9 w-full overflow-hidden bg-tag-bg group-hover:shadow-card-hover transition-shadow">
-          {videoUrl && isHovered ? (
+      <div className="flex flex-col gap-3" ref={containerRef}>
+        {/* Container for Image/Video */}
+        <div className="relative aspect-16-9 w-full overflow-hidden bg-tag-bg group-hover:shadow-card-hover transition-shadow rounded-sm">
+          {showVideo ? (
             <video
               ref={videoRef}
               src={videoUrl}
               muted
               loop
               playsInline
-              className="absolute inset-0 h-full w-full object-cover"
+              // Set poster to thumbnail if exists for better loading phase
+              poster={thumbnailUrl}
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+                (isMobile || isHovered || !hasThumbnail) ? "opacity-100" : "opacity-0"
+              )}
             />
-          ) : (
+          ) : null}
+
+          {/* Show Image if not currently showing video or as a fallback */}
+          {hasThumbnail && (
             <Image
               src={thumbnailUrl}
               alt={title}
               fill
-              className="object-cover"
+              className={cn(
+                "object-cover transition-opacity duration-300",
+                (showVideo && (isHovered || (isMobile && isInView) || !hasThumbnail)) ? "opacity-0" : "opacity-100"
+              )}
               loading="lazy"
             />
+          )}
+
+          {/* If no thumbnail and no video showing yet, show a placeholder or the first frame of video */}
+          {!hasThumbnail && !showVideo && (
+            <div className="absolute inset-0 bg-tag-bg flex items-center justify-center">
+              <span className="text-secondary-text text-xs">Preview</span>
+            </div>
           )}
         </div>
 

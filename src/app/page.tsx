@@ -1,44 +1,42 @@
+import { Suspense } from 'react'
 import { SectionCard } from '@/components/gallery/SectionCard'
+import { SectionSkeleton } from '@/components/ui/Skeleton'
+import { getSections } from '@/actions/sections'
 
-// Mock data for initial UI dev
-const MOCK_SECTIONS = [
-  {
-    id: '1',
-    slug: 'image-split-scroll',
-    title: 'Image Split Scroll Animation in Framer',
-    description: 'A smooth scroll-triggered image split effect with GSAP integration.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    index: '01'
-  },
-  {
-    id: '2',
-    slug: 'hero-parallax',
-    title: 'Dynamic Hero Parallax Section',
-    description: 'High-performance parallax effect for modern landing pages.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop',
-    videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-    index: '02'
-  },
-  {
-    id: '3',
-    slug: 'sticky-reveal',
-    title: 'Sticky Reveal Gallery Component',
-    description: 'Perfect for showcasing multiple layers of content on scroll.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1000&auto=format&fit=crop',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    index: '03'
-  },
-  {
-    id: '4',
-    slug: 'bento-grid-motion',
-    title: 'Animated Bento Grid Layout',
-    description: 'Flexible grid with staggered entrance animations and hover effects.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1000&auto=format&fit=crop',
-    videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-    index: '04'
+async function SectionGrid() {
+  const { success, data: sections, error } = await getSections()
+
+  if (!success || !sections || sections.length === 0) {
+    return (
+      <div className="col-span-full py-20 text-center">
+        <p className="text-secondary-text font-mono">
+          {error?.message || 'No sections found. Check back later!'}
+        </p>
+      </div>
+    )
   }
-]
+
+  return (
+    <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-6 pb-20">
+      {sections.map((section) => (
+        <SectionCard
+          key={section.id}
+          {...section}
+        />
+      ))}
+    </section>
+  )
+}
+
+function GridSkeleton() {
+  return (
+    <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-6 pb-20">
+      {[...Array(4)].map((_, i) => (
+        <SectionSkeleton key={i} />
+      ))}
+    </section>
+  )
+}
 
 export default function Home() {
   return (
@@ -53,15 +51,10 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Main Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-6 pb-20">
-        {MOCK_SECTIONS.map((section) => (
-          <SectionCard
-            key={section.id}
-            {...section}
-          />
-        ))}
-      </section>
+      {/* Main Grid with Suspense */}
+      <Suspense fallback={<GridSkeleton />}>
+        <SectionGrid />
+      </Suspense>
     </div>
   )
 }
