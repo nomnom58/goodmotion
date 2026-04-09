@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import { SectionCard } from '@/components/gallery/SectionCard'
+import { SectionList } from '@/components/gallery/SectionList'
 import { SectionSkeleton } from '@/components/ui/Skeleton'
 import { getSections } from '@/actions/sections'
 
 async function SectionGrid() {
-  const { success, data: sections, error } = await getSections()
+  const { success, data: sections, hasMore, error } = await getSections(6, 0)
 
   if (!success || !sections || sections.length === 0) {
     return (
@@ -17,14 +17,10 @@ async function SectionGrid() {
   }
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-6 pb-20">
-      {sections.map((section) => (
-        <SectionCard
-          key={section.id}
-          {...section}
-        />
-      ))}
-    </section>
+    <SectionList 
+      initialSections={sections} 
+      initialHasMore={hasMore} 
+    />
   )
 }
 

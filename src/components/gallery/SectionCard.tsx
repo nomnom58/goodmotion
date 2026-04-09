@@ -26,6 +26,7 @@ export function SectionCard({
   const [isHovered, setIsHovered] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [isInView, setIsInView] = useState(false)
+  const [isNearViewport, setIsNearViewport] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -37,6 +38,28 @@ export function SectionCard({
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Intersection Observer for Lazy Rendering (Video)
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsNearViewport(true)
+          // Optimization: Once rendered, we can keep it or disconnect 
+          // but for dynamic large lists, keeping it might be better 
+          // to un-render off-screen ones too.
+        } else {
+          setIsNearViewport(false)
+        }
+      },
+      { rootMargin: '500px' } // Pre-render when 500px close
+    )
+
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
   }, [])
 
   // Intersection Observer for Mobile Autoplay
@@ -56,7 +79,7 @@ export function SectionCard({
 
   // Handle Video Play/Pause
   useEffect(() => {
-    if (!videoRef.current || !videoUrl) return
+    if (!videoRef.current || !videoUrl || !isNearViewport) return
 
     const shouldPlay = isMobile ? isInView : isHovered
 
@@ -69,12 +92,12 @@ export function SectionCard({
       // Optimization: Don't resetting currentTime to 0 on mobile for smoother experience
       if (!isMobile) videoRef.current.currentTime = 0
     }
-  }, [isHovered, isInView, isMobile, videoUrl])
+  }, [isHovered, isInView, isMobile, videoUrl, isNearViewport])
 
   // Handle Thumbnail Fallback: If no thumbnailUrl but has videoUrl, 
   // we use the video itself (static or autoplay)
   const hasThumbnail = thumbnailUrl && thumbnailUrl !== ''
-  const showVideo = !!videoUrl && (isMobile ? true : isHovered || !hasThumbnail)
+  const showVideo = !!videoUrl && isNearViewport && (isMobile ? true : isHovered || !hasThumbnail)
 
   return (
     <Link

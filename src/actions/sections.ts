@@ -4,29 +4,33 @@ import { auth } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
 import { Section, SectionCardData } from '@/types/section'
 
-export async function getSections(): Promise<{ success: boolean; data?: SectionCardData[]; error?: any }> {
+export async function getSections(limit: number = 6, offset: number = 0): Promise<{ success: boolean; data?: SectionCardData[]; error?: any; hasMore: boolean }> {
   try {
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from('sections')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('is_active', true)
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     if (error) {
       console.error('Error fetching sections:', error)
       return { 
         success: false, 
-        error: { code: 'SYS_500', message: 'Failed to fetch sections from database' } 
+        error: { code: 'SYS_500', message: 'Failed to fetch sections from database' },
+        hasMore: false
       }
     }
+
+    const hasMore = count ? (offset + limit < count) : false
 
     const sections = (data as Section[]).map((row, idx) => {
       const assets = row.preview_assets || []
       const imageAsset = assets.find(a => a.type === 'image')
       const videoAsset = assets.find(a => a.type === 'video')
 
-      // Use index from creation order if needed, or row index
-      const displayIndex = (idx + 1).toString().padStart(2, '0')
+      // Use absolute index for display
+      const displayIndex = (offset + idx + 1).toString().padStart(2, '0')
 
       return {
         id: row.id,
@@ -43,13 +47,15 @@ export async function getSections(): Promise<{ success: boolean; data?: SectionC
     return {
       success: true,
       data: sections,
+      hasMore,
       message: 'Sections fetched successfully'
     } as any
   } catch (err) {
     console.error('Unexpected error:', err)
     return { 
       success: false, 
-      error: { code: 'SYS_500', message: 'An unexpected error occurred' } 
+      error: { code: 'SYS_500', message: 'An unexpected error occurred' },
+      hasMore: false
     }
   }
 }
