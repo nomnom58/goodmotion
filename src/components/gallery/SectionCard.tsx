@@ -93,7 +93,7 @@ export function SectionCard({
               muted
               loop
               playsInline
-              // Set poster to thumbnail if exists for better loading phase
+              preload="metadata"
               poster={thumbnailUrl}
               className={cn(
                 "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
@@ -108,6 +108,7 @@ export function SectionCard({
               src={thumbnailUrl}
               alt={title}
               fill
+              unoptimized
               className={cn(
                 "object-cover transition-opacity duration-300",
                 (showVideo && (isHovered || (isMobile && isInView) || !hasThumbnail)) ? "opacity-0" : "opacity-100"

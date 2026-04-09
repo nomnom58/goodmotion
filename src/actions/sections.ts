@@ -33,7 +33,7 @@ export async function getSections(): Promise<{ success: boolean; data?: SectionC
         slug: row.slug,
         title: row.title,
         description: row.body_text,
-        thumbnailUrl: imageAsset?.url || videoAsset?.url || '', // Fallback to video if no image
+        thumbnailUrl: imageAsset?.url || '', // Only use image asset for thumbnail
         videoUrl: videoAsset?.url,
         index: displayIndex,
         category: row.category
@@ -94,7 +94,7 @@ export async function getSectionDetail(slug: string): Promise<{
         id: row.id,
         slug: row.slug,
         title: row.title,
-        thumbnailUrl: imageAsset?.url || videoAsset?.url || '',
+        thumbnailUrl: imageAsset?.url || '',
         index: (idx + 1).toString().padStart(2, '0')
       }
     })
