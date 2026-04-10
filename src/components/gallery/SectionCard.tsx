@@ -131,12 +131,12 @@ export function SectionCard({
               src={thumbnailUrl}
               alt={title}
               fill
-              unoptimized
               className={cn(
                 "object-cover transition-opacity duration-300",
                 (showVideo && (isHovered || (isMobile && isInView) || !hasThumbnail)) ? "opacity-0" : "opacity-100"
               )}
-              loading="lazy"
+              loading={index && parseInt(index) <= 2 ? undefined : "lazy"}
+              priority={index ? parseInt(index) <= 2 : false}
             />
           )}
 

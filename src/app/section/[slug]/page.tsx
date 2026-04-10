@@ -10,6 +10,8 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+export const revalidate = 3600 // Revalidate every hour
+
 export default async function SectionDetailPage({ params }: PageProps) {
   const { slug } = await params
   const { success, data, error } = await getSectionDetail(slug)

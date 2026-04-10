@@ -3,6 +3,8 @@ import { SectionList } from '@/components/gallery/SectionList'
 import { SectionSkeleton } from '@/components/ui/Skeleton'
 import { getSections } from '@/actions/sections'
 
+export const revalidate = 3600
+
 async function SectionGrid() {
   const { success, data: sections, hasMore, error } = await getSections(6, 0)
 
