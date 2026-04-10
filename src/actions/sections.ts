@@ -101,6 +101,7 @@ export async function getSectionDetail(slug: string): Promise<{
         slug: row.slug,
         title: row.title,
         thumbnailUrl: imageAsset?.url || '',
+        videoUrl: videoAsset?.url,
         index: (idx + 1).toString().padStart(2, '0')
       }
     })
