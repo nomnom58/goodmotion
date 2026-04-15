@@ -94,10 +94,13 @@ export function SectionCard({
     }
   }, [isHovered, isInView, isMobile, videoUrl, isNearViewport])
 
-  // Handle Thumbnail Fallback: If no thumbnailUrl but has videoUrl, 
-  // we use the video itself (static or autoplay)
-  const hasThumbnail = thumbnailUrl && thumbnailUrl !== ''
-  const showVideo = !!videoUrl && isNearViewport && (isMobile ? true : isHovered || !hasThumbnail)
+  // Handle Thumbnail Fallback
+  const hasThumbnail = !!thumbnailUrl && thumbnailUrl !== ''
+  
+  // Logic: 
+  // - Show video ONLY on Desktop AND when Hovered AND isNearViewport.
+  // - Mobile never shows video on Home/Related cards (per user request).
+  const showVideo = !isMobile && isHovered && !!videoUrl && isNearViewport
 
   return (
     <Link
@@ -116,35 +119,43 @@ export function SectionCard({
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="none"
               poster={thumbnailUrl}
               className={cn(
-                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-                (isMobile || isHovered || !hasThumbnail) ? "opacity-100" : "opacity-0"
+                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300 z-10",
+                isHovered ? "opacity-100" : "opacity-0"
               )}
             />
           ) : null}
 
-          {/* Show Image if not currently showing video or as a fallback */}
-          {hasThumbnail && (
+          {/* Show Image if available */}
+          {hasThumbnail ? (
             <Image
               src={thumbnailUrl}
               alt={title}
               fill
               className={cn(
                 "object-cover transition-opacity duration-300",
-                (showVideo && (isHovered || (isMobile && isInView) || !hasThumbnail)) ? "opacity-0" : "opacity-100"
+                (showVideo && isHovered) ? "opacity-0" : "opacity-100"
               )}
               loading={index && parseInt(index) <= 2 ? undefined : "lazy"}
               priority={index ? parseInt(index) <= 2 : false}
             />
+          ) : (
+            /* Fallback Black Div if no thumbnail */
+            <div className="absolute inset-0 bg-[#000000] flex flex-col items-center justify-center gap-2">
+              <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
+                <span className="text-white/20 text-[10px] font-mono">!</span>
+              </div>
+              <span className="text-white/30 text-[10px] font-mono tracking-tight uppercase">
+                Missing Thumbnail
+              </span>
+            </div>
           )}
 
-          {/* If no thumbnail and no video showing yet, show a placeholder or the first frame of video */}
-          {!hasThumbnail && !showVideo && (
-            <div className="absolute inset-0 bg-tag-bg flex items-center justify-center">
-              <span className="text-secondary-text text-xs">Preview</span>
-            </div>
+          {/* Subtle Overlay on Hover */}
+          {!isMobile && (
+            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
           )}
         </div>
 

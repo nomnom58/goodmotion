@@ -6,9 +6,10 @@ export interface Section {
   category: string
   tags?: string[]
   preview_assets: {
-    url: string
-    type: 'image' | 'video'
-  }[]
+    type: string
+    thumb_url: string
+    video_url: string
+  }
   remix_link: string
   webflow_link?: string
   is_active: boolean

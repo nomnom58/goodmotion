@@ -25,9 +25,9 @@ export async function getSections(limit: number = 6, offset: number = 0): Promis
     const hasMore = count ? (offset + limit < count) : false
 
     const sections = (data as Section[]).map((row, idx) => {
-      const assets = row.preview_assets || []
-      const imageAsset = assets.find(a => a.type === 'image')
-      const videoAsset = assets.find(a => a.type === 'video')
+      const assets = row.preview_assets
+      const thumb_url = assets?.thumb_url || ''
+      const video_url = assets?.video_url || ''
 
       // Use absolute index for display
       const displayIndex = (offset + idx + 1).toString().padStart(2, '0')
@@ -37,8 +37,8 @@ export async function getSections(limit: number = 6, offset: number = 0): Promis
         slug: row.slug,
         title: row.title,
         description: row.body_text,
-        thumbnailUrl: imageAsset?.url || '', // Only use image asset for thumbnail
-        videoUrl: videoAsset?.url,
+        thumbnailUrl: thumb_url,
+        videoUrl: video_url,
         index: displayIndex,
         category: row.category
       }
@@ -93,15 +93,13 @@ export async function getSectionDetail(slug: string): Promise<{
       .limit(3)
 
     const related = (relatedData || []).map((row: any, idx: number) => {
-      const assets = row.preview_assets || []
-      const imageAsset = assets.find((a: any) => a.type === 'image')
-      const videoAsset = assets.find((a: any) => a.type === 'video')
+      const assets = row.preview_assets
       return {
         id: row.id,
         slug: row.slug,
         title: row.title,
-        thumbnailUrl: imageAsset?.url || '',
-        videoUrl: videoAsset?.url,
+        thumbnailUrl: assets?.thumb_url || '',
+        videoUrl: assets?.video_url,
         index: (idx + 1).toString().padStart(2, '0')
       }
     })

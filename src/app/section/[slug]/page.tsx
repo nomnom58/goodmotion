@@ -28,9 +28,9 @@ export default async function SectionDetailPage({ params }: PageProps) {
   }
 
   const { section, related } = data
-  const assets = section.preview_assets || []
-  const videoAsset = assets.find(a => a.type === 'video')
-  const imageAsset = assets.find(a => a.type === 'image')
+  const assets = section.preview_assets
+  const thumb_url = assets?.thumb_url
+  const video_url = assets?.video_url
 
   // Date formatting (using a fallback string if no date-fns)
   const timeAgo = section.created_at 
@@ -75,25 +75,31 @@ export default async function SectionDetailPage({ params }: PageProps) {
       <div className="flex flex-col gap-6">
         {/* Main Preview */}
         <div className="aspect-16-9 w-full bg-tag-bg relative overflow-hidden rounded-sm">
-          {videoAsset ? (
+          {video_url ? (
             <video
-              src={videoAsset.url}
+              src={video_url}
               autoPlay
               muted
               loop
               playsInline
-              poster={imageAsset?.url}
+              poster={thumb_url}
               className="absolute inset-0 w-full h-full object-cover"
             />
-          ) : imageAsset ? (
+          ) : thumb_url ? (
             <img 
-              src={imageAsset.url} 
+              src={thumb_url} 
               alt={section.title} 
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-secondary-text font-mono">
-              Preview not available
+            /* Fallback Black Div if no asset at all */
+            <div className="absolute inset-0 bg-[#000000] flex flex-col items-center justify-center gap-2">
+              <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
+                <span className="text-white/20 text-[10px] font-mono">!</span>
+              </div>
+              <span className="text-white/30 text-[10px] font-mono tracking-tight uppercase">
+                Preview not available
+              </span>
             </div>
           )}
         </div>
