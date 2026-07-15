@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/nextjs'
 import { useState, useCallback } from 'react'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { cn } from '@/lib/utils'
+import { BYPASS_AUTH } from '@/lib/auth-config'
 
 interface AuthActionProps {
   children: React.ReactElement
@@ -16,6 +17,7 @@ export function AuthAction({ children, message = 'Sign in to access this feature
   const [isOpen, setIsOpen] = useState(false)
 
   const handleClick = useCallback((e: React.MouseEvent) => {
+    if (BYPASS_AUTH) return
     if (!isSignedIn) {
       e.preventDefault()
       e.stopPropagation()
@@ -24,7 +26,7 @@ export function AuthAction({ children, message = 'Sign in to access this feature
     }
   }, [isSignedIn])
 
-  if (isSignedIn) return children
+  if (BYPASS_AUTH || isSignedIn) return children
 
   return (
     <Tooltip content={message} open={isOpen} onOpenChange={setIsOpen}>

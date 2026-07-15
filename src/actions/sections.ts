@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
+import { BYPASS_AUTH } from '@/lib/auth-config'
 import { Section, SectionCardData } from '@/types/section'
 
 export async function getSections(limit: number = 6, offset: number = 0): Promise<{ success: boolean; data?: SectionCardData[]; error?: any; hasMore: boolean }> {
@@ -123,13 +124,15 @@ export async function getProtectedLinks(sectionId: string): Promise<{
   error?: any 
 }> {
   try {
-    // Verify session via Clerk
-    const { userId } = await auth()
-    
-    if (!userId) {
-      return { 
-        success: false, 
-        error: { code: 'AUTH_001', message: 'Authentication required' } 
+    // Verify session via Clerk if authentication is required
+    if (!BYPASS_AUTH) {
+      const { userId } = await auth()
+      
+      if (!userId) {
+        return { 
+          success: false, 
+          error: { code: 'AUTH_001', message: 'Authentication required' } 
+        }
       }
     }
 

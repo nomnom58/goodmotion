@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { BYPASS_AUTH } from '@/lib/auth-config'
+import { NextResponse } from 'next/server'
 
 // Định nghĩa các route công khai (ai cũng xem được)
 const isPublicRoute = createRouteMatcher([
@@ -8,11 +10,13 @@ const isPublicRoute = createRouteMatcher([
     '/section/(.*)' // Cho phép xem chi tiết nhưng chưa lấy được link Remix
 ])
 
-export default clerkMiddleware(async (auth, request) => {
-    if (!isPublicRoute(request)) {
-        await auth.protect()
-    }
-})
+export default BYPASS_AUTH
+    ? () => NextResponse.next()
+    : clerkMiddleware(async (auth, request) => {
+        if (!isPublicRoute(request)) {
+            await auth.protect()
+        }
+    })
 
 export const config = {
     matcher: [

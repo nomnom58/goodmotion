@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { PostHogProvider } from '@/providers/PostHogProvider'
+import { BYPASS_AUTH } from '@/lib/auth-config'
 import './globals.css'
 
 const instrumentSerif = Instrument_Serif({
@@ -51,31 +52,35 @@ export default function RootLayout({
                   />
                 </Link>
                 <div className="flex items-center gap-4">
-                  <Show when="signed-out">
-                    <div className="flex items-center gap-2 text-[14px] font-medium text-primary-text">
-                      <SignInButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0">
-                          Log In
-                        </button>
-                      </SignInButton>
-                      <span className="opacity-50">.</span>
-                      <SignUpButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0">
-                          Sign Up
-                        </button>
-                      </SignUpButton>
-                    </div>
-                  </Show>
+                  {!BYPASS_AUTH && (
+                    <>
+                      <Show when="signed-out">
+                        <div className="flex items-center gap-2 text-[14px] font-medium text-primary-text">
+                          <SignInButton mode="modal">
+                            <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0">
+                              Log In
+                            </button>
+                          </SignInButton>
+                          <span className="opacity-50">.</span>
+                          <SignUpButton mode="modal">
+                            <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0">
+                              Sign Up
+                            </button>
+                          </SignUpButton>
+                        </div>
+                      </Show>
 
-                  <Show when="signed-in">
-                    <UserButton 
-                      appearance={{
-                        elements: {
-                          userButtonAvatarBox: 'w-8 h-8',
-                        }
-                      }}
-                    />
-                  </Show>
+                      <Show when="signed-in">
+                        <UserButton 
+                          appearance={{
+                            elements: {
+                              userButtonAvatarBox: 'w-8 h-8',
+                            }
+                          }}
+                        />
+                      </Show>
+                    </>
+                  )}
                 </div>
               </div>
             </header>
