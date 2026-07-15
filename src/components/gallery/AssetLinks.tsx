@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { AuthAction } from '@/components/ui/AuthAction'
 import { getProtectedLinks } from '@/actions/sections'
 import { Copy, Zap } from 'lucide-react'
+import posthog from 'posthog-js'
 
 // Custom Framer Icon
 const FramerIcon = ({ size = 16 }: { size?: number }) => (
@@ -33,6 +34,13 @@ export function AssetLinks({ sectionId, hasWebflow }: AssetLinksProps) {
 
   const handleGetLink = (type: 'remix' | 'webflow') => {
     setError(null)
+    
+    // Capture the click event in PostHog
+    posthog.capture('click_remix_button', {
+      sectionId,
+      type
+    })
+
     startTransition(async () => {
       const result = await getProtectedLinks(sectionId)
       
