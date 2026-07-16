@@ -120,7 +120,7 @@ export async function getSectionDetail(slug: string): Promise<{
 
 export async function getProtectedLinks(sectionId: string): Promise<{ 
   success: boolean; 
-  data?: { remix_link: string; webflow_link?: string }; 
+  data?: { remix_link: string; webflow_link?: string; framer_component_link?: string }; 
   error?: any 
 }> {
   try {
@@ -138,7 +138,7 @@ export async function getProtectedLinks(sectionId: string): Promise<{
 
     const { data, error } = await supabase
       .from('sections')
-      .select('remix_link, webflow_link')
+      .select('remix_link, webflow_link, framer_component_link')
       .eq('id', sectionId)
       .single()
 
@@ -153,7 +153,8 @@ export async function getProtectedLinks(sectionId: string): Promise<{
       success: true,
       data: {
         remix_link: data.remix_link,
-        webflow_link: data.webflow_link
+        webflow_link: data.webflow_link,
+        framer_component_link: data.framer_component_link
       }
     }
   } catch (err) {

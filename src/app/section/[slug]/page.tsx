@@ -54,6 +54,8 @@ export default async function SectionDetailPage({ params }: PageProps) {
           <AssetLinks 
             sectionId={section.id} 
             hasWebflow={!!section.webflow_link} 
+            hasRemix={!!section.remix_link}
+            hasFramerComponent={!!section.framer_component_link}
           />
         </div>
       </div>
@@ -67,6 +69,8 @@ export default async function SectionDetailPage({ params }: PageProps) {
           <AssetLinks 
             sectionId={section.id} 
             hasWebflow={!!section.webflow_link} 
+            hasRemix={!!section.remix_link}
+            hasFramerComponent={!!section.framer_component_link}
           />
         </div>
       </div>

@@ -12,6 +12,7 @@ export interface Section {
   }
   remix_link: string
   webflow_link?: string
+  framer_component_link?: string
   is_active: boolean
   created_at?: string
   updated_at?: string

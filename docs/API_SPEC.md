@@ -33,7 +33,7 @@ ERROR RESPONSE:
 ### Feature: Protected Assets (Private)
 | Action | Params | Return | Auth |
 | :--- | :--- | :--- | :--- |
-| getProtectedLinks | sectionId: string | { remix_link, webflow_link } | Yes (Clerk) |
+| getProtectedLinks | sectionId: string | { remix_link, webflow_link, framer_component_link } | Yes (Clerk) |
 
 ---
 

@@ -23,6 +23,7 @@ Stores all animation templates and their protected metadata.
 | preview_assets | jsonb | NOT NULL | [] | List of videos/images [{url, type}] |
 | remix_link | text | NOT NULL | - | **Protected: Framer Remix Link** |
 | webflow_link | text | NULL | - | **Protected: Webflow Clone Link** |
+| framer_component_link | text | NULL | - | **Protected: Framer Component Link** |
 | is_active | boolean | - | true | Soft delete / Hide from UI |
 | created_at | timestamptz | - | now() | Record creation time |
 | updated_at | timestamptz | - | now() | Last update time |
@@ -43,6 +44,7 @@ sections {
     text body_text
     text remix_link (Protected)
     text webflow_link (Protected)
+    text framer_component_link (Protected)
     boolean is_active
 }
 

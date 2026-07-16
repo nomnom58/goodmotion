@@ -6,6 +6,8 @@ import { AuthAction } from '@/components/ui/AuthAction'
 import { getProtectedLinks } from '@/actions/sections'
 import { Copy, Zap } from 'lucide-react'
 import posthog from 'posthog-js'
+import { useToast } from '@/components/ui/Toast'
+
 
 // Custom Framer Icon
 const FramerIcon = ({ size = 16 }: { size?: number }) => (
@@ -26,11 +28,14 @@ const FramerIcon = ({ size = 16 }: { size?: number }) => (
 interface AssetLinksProps {
   sectionId: string
   hasWebflow: boolean
+  hasRemix: boolean
+  hasFramerComponent: boolean
 }
 
-export function AssetLinks({ sectionId, hasWebflow }: AssetLinksProps) {
+export function AssetLinks({ sectionId, hasWebflow, hasRemix, hasFramerComponent }: AssetLinksProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   const handleGetLink = (type: 'remix' | 'webflow') => {
     setError(null)
@@ -42,17 +47,62 @@ export function AssetLinks({ sectionId, hasWebflow }: AssetLinksProps) {
     })
 
     startTransition(async () => {
-      const result = await getProtectedLinks(sectionId)
-      
-      if (result.success && result.data) {
-        const url = type === 'remix' ? result.data.remix_link : result.data.webflow_link
-        if (url) {
-          window.open(url, '_blank')
+      try {
+        const result = await getProtectedLinks(sectionId)
+        
+        if (result.success && result.data) {
+          const url = type === 'remix' ? result.data.remix_link : result.data.webflow_link
+          if (url) {
+            window.open(url, '_blank')
+          } else {
+            const errMsg = 'Link not available'
+            setError(errMsg)
+            showToast('fail', 'Fail', errMsg)
+          }
         } else {
-          setError('Link not available')
+          const errMsg = result.error?.message || 'Failed to fetch link'
+          setError(errMsg)
+          showToast('fail', 'Fail', errMsg)
         }
-      } else {
-        setError(result.error?.message || 'Failed to fetch link')
+      } catch (err: any) {
+        const errMsg = err?.message || 'An unexpected error occurred'
+        setError(errMsg)
+        showToast('fail', 'Fail', errMsg)
+      }
+    })
+  }
+
+  const handleCopyComponent = () => {
+    setError(null)
+
+    // Capture the copy component click event in PostHog
+    posthog.capture('click_copy_component_button', {
+      sectionId
+    })
+
+    startTransition(async () => {
+      try {
+        const result = await getProtectedLinks(sectionId)
+        
+        if (result.success && result.data) {
+          const url = result.data.framer_component_link
+          if (url) {
+            await navigator.clipboard.writeText(url)
+            showToast('success', 'Copied Successfully', 'Copied! Then paste in your Framer file')
+          } else {
+            const errMsg = 'Component link is not available yet'
+            setError(errMsg)
+            showToast('fail', 'Fail', errMsg)
+          }
+        } else {
+          const errMsg = result.error?.message || 'Failed to fetch link'
+          setError(errMsg)
+          showToast('fail', 'Fail', errMsg)
+        }
+      } catch (err: any) {
+        const errMsg = err?.message || 'Clipboard access denied'
+        setError(errMsg)
+        showToast('fail', 'Fail', errMsg)
       }
     })
   }
@@ -78,34 +128,41 @@ export function AssetLinks({ sectionId, hasWebflow }: AssetLinksProps) {
           </AuthAction>
         )}
 
+        {/* Copy Component Button */}
+        {hasFramerComponent && (
+          <AuthAction message="Sign in to copy component" className="flex-1 sm:flex-none">
+            <Button
+              variant="secondary"
+              size="default"
+              borderRadius="full"
+              className="gap-2 w-full sm:w-auto"
+              disabled={isPending}
+              onClick={handleCopyComponent}
+            >
+              <Copy size={16} />
+              <span>Copy Component</span>
+            </Button>
+          </AuthAction>
+        )}
+
         {/* Remix Button */}
-        <AuthAction message="Sign in to remix in Framer" className="flex-1 sm:flex-none">
-          <Button 
-            variant="primary" 
-            size="default" 
-            borderRadius="none" 
-            className="gap-2 w-full sm:w-auto"
-            disabled={isPending}
-            onClick={() => handleGetLink('remix')}
-          >
-            <FramerIcon size={16} />
-            <span className="hidden sm:inline">Remix Framer</span>
-            <span className="sm:hidden">Remix</span>
-          </Button>
-        </AuthAction>
+        {hasRemix && (
+          <AuthAction message="Sign in to remix in Framer" className="flex-1 sm:flex-none">
+            <Button 
+              variant="primary" 
+              size="default" 
+              borderRadius="none" 
+              className="gap-2 w-full sm:w-auto"
+              disabled={isPending}
+              onClick={() => handleGetLink('remix')}
+            >
+              <FramerIcon size={16} />
+              <span className="hidden sm:inline">Remix Framer</span>
+              <span className="sm:hidden">Remix</span>
+            </Button>
+          </AuthAction>
+        )}
       </div>
-      
-      {error && (
-        <p className="text-red-500 text-[10px] font-mono mt-1 text-center sm:text-right">
-          {error}
-        </p>
-      )}
-      
-      {isPending && (
-        <p className="text-secondary-text text-[10px] font-mono mt-1 text-center sm:text-right animate-pulse">
-          Fetching secure link...
-        </p>
-      )}
     </div>
   )
 }
