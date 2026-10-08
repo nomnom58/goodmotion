@@ -28,7 +28,7 @@ async function SectionGrid() {
 
 function GridSkeleton() {
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-6 pb-20">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-6 pb-20">
       {[...Array(4)].map((_, i) => (
         <SectionSkeleton key={i} />
       ))}
@@ -41,11 +41,11 @@ export default function Home() {
     <div className="flex flex-col pt-0 sm:pt-0">
       {/* Hero Header */}
       <section className="flex flex-col gap-4 mb-6">
-        <h1 className="font-serif text-brand text-[40px] leading-[40px] sm:w-[350px] text-left">
-          Gap Library for Framer/Web
+        <h1 className="font-sans font-bold text-[32px] sm:text-[40px] text-[#121212] tracking-[-0.04em] leading-[1.2] sm:max-w-[500px] text-left">
+          Best GSAP library, Ready for Framer
         </h1>
-        <p className="font-mono text-[14px] sm:text-[16px] font-normal text-secondary-text sm:max-w-[450px]">
-          Static designs are no longer enough. GOOD MOTION bridges the gap between high-end design and complex web animation.
+        <p className="font-sans font-normal text-[14px] sm:text-[16px] text-secondary-text tracking-[-0.04em] leading-[1.2] sm:max-w-[480px]">
+          Drop into Framer or paste straight into Cursor, Claude, Gemini, or Bolt. Ready in seconds.
         </p>
       </section>
 

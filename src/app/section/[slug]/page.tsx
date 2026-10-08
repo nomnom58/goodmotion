@@ -41,7 +41,7 @@ export default async function SectionDetailPage({ params }: PageProps) {
     <div className="flex flex-col pt-0 pb-5">
       {/* Detail Hero */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-4 mb-4 mt-0">
-        <h1 className="font-serif text-brand text-[40px] leading-[40px] text-left sm:max-w-[350px]">
+        <h1 className="font-sans font-bold text-[32px] sm:text-[40px] text-[#121212] tracking-[-0.04em] leading-[1.2] text-left sm:max-w-[500px]">
           {section.title}
         </h1>
 

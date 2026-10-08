@@ -160,7 +160,7 @@ export function SectionCard({
         </div>
 
         <div className="flex flex-col gap-1">
-          <h3 className="text-[16px] font-medium text-primary-text flex gap-2">
+          <h3 className="font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] leading-[1.2] flex gap-2">
             {title}
           </h3>
         </div>

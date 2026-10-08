@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-instrument-serif);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-inter), sans-serif;
+  --font-mono: var(--font-inter), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
 
-  --color-background: #FAF8F4;
+  --color-background: #FFFFFF;
   --color-primary-text: #1F1F1F;
   --color-secondary-text: #535353;
   --color-brand: #1F46FD;
@@ -16,11 +17,14 @@
 }
 
 :root {
-  --background: #FAF8F4;
+  --background: #FFFFFF;
   --foreground: #1F1F1F;
 }
 
 body {
+  font-family: var(--font-inter), sans-serif;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
