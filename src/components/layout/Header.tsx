@@ -35,8 +35,8 @@ export function Header() {
   const isHomeActive = !isHowToUseActive && !isAboutActive
 
   return (
-    <header className="w-full bg-white sticky top-0 z-50">
-      <div className="max-w-[1440px] mx-auto px-4 pt-3 pb-3 relative z-50 bg-white">
+    <header className="w-full bg-white sticky top-0 md:relative md:top-auto z-50">
+      <div className="w-full px-4 pt-3 pb-3 relative z-50 bg-white">
         {/* ================= DESKTOP & TABLET HEADER ================= */}
         <div className="hidden md:flex flex-col w-full">
           {/* Row 1: Interactive Logo full width */}
@@ -45,7 +45,7 @@ export function Header() {
           </Link>
 
           {/* Row 2: Navigation Menu Bar below Logo */}
-          <div className="flex items-center justify-between w-full py-4 border-b border-border-color/30 text-[14px]">
+          <div className="flex items-center justify-between w-full py-4 text-[14px]">
             {/* Left side links */}
             <nav className="flex items-center gap-[2px] font-sans font-medium text-[16px] tracking-[-0.04em] uppercase">
               <ScrambleLink href="/" text="HOME" isActive={isHomeActive} className="px-[8px] py-[5px]" />

@@ -46,26 +46,28 @@ export default function RootLayout({
           lang="en"
           className={`${instrumentSerif.variable} ${jetbrainsMono.variable} ${inter.variable} h-full antialiased`}
         >
-          <body className="min-h-full flex flex-col bg-background text-primary-text font-sans selection:bg-brand/10 selection:text-brand">
+          <body className="min-h-full flex flex-col bg-[#EAEAEA] text-primary-text font-sans selection:bg-brand/10 selection:text-brand">
             <ToastProvider>
-              <Header />
+              <div className="max-w-[1440px] mx-auto w-full min-h-screen flex flex-col bg-white border-x border-black/10">
+                <Header />
 
-              <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 pb-5 pt-4">
-                {children}
-              </main>
+                <main className="flex-1 w-full px-4 pb-5 pt-4">
+                  {children}
+                </main>
 
-              <footer className="max-w-[1440px] mx-auto w-full p-4 pt-10 border-t border-border-color mt-auto">
-                <div className="flex flex-col items-start gap-4">
-                  <Image 
-                    src="/logo.png" 
-                    alt="GOOD MOTION" 
-                    width={120} 
-                    height={32} 
-                    className="h-6 w-auto object-contain"
-                  />
-                  <div className="text-[14px] text-secondary-text">© 2026 GOOD MOTION</div>
-                </div>
-              </footer>
+                <footer className="w-full p-4 pt-10 border-t border-border-color mt-auto">
+                  <div className="flex flex-col items-start gap-4">
+                    <Image 
+                      src="/logo.png" 
+                      alt="GOOD MOTION" 
+                      width={120} 
+                      height={32} 
+                      className="h-6 w-auto object-contain"
+                    />
+                    <div className="text-[14px] text-secondary-text">© 2026 GOOD MOTION</div>
+                  </div>
+                </footer>
+              </div>
             </ToastProvider>
           </body>
         </html>
