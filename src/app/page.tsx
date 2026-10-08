@@ -42,11 +42,11 @@ export default function Home() {
       {/* Hero Header */}
       <section className="flex flex-col items-center text-center mt-[64px] mb-[64px] gap-3 w-full sm:w-[400px] mx-auto">
         <h1 className="font-sans font-bold text-[24px] text-[#121212] tracking-[-0.04em] leading-[1.2]">
-          Best GSAP library, <br className="sm:hidden" />
-          Ready for Framer
+          Best GSAP Library <br />
+          Copy. Paste. Done
         </h1>
         <p className="font-sans font-normal text-[20px] text-black/75 tracking-[-0.04em] leading-[1.2]">
-          Drop into Framer or paste straight into Cursor, Claude, Gemini, or Bolt. Ready in seconds.
+          Drop into Framer or paste straight into Cursor, Claude, Gemini, or Bolt.
         </p>
       </section>
 
