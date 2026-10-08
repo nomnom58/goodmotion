@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import { InteractiveLogo } from '@/components/ui/InteractiveLogo'
+import { ScrambleLink } from '@/components/ui/ScrambleLink'
 import { BYPASS_AUTH } from '@/lib/auth-config'
 import { Menu, X } from 'lucide-react'
 
@@ -25,6 +27,12 @@ const GithubIcon = ({ size = 16 }: { size?: number }) => (
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Active Tab Logic: HOME remains active for / and any detail pages (not /how-to-use and not /about)
+  const isHowToUseActive = pathname === '/how-to-use'
+  const isAboutActive = pathname === '/about'
+  const isHomeActive = !isHowToUseActive && !isAboutActive
 
   return (
     <header className="w-full bg-white sticky top-0 z-50">
@@ -39,25 +47,19 @@ export function Header() {
           {/* Row 2: Navigation Menu Bar below Logo */}
           <div className="flex items-center justify-between w-full py-4 border-b border-border-color/30 text-[14px]">
             {/* Left side links */}
-            <nav className="flex items-center gap-6 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
-              <Link href="/" className="hover:opacity-70 transition-opacity">
-                HOME
-              </Link>
-              <Link href="/how-to-use" className="hover:opacity-70 transition-opacity">
-                HOW TO USE
-              </Link>
-              <Link href="/about" className="hover:opacity-70 transition-opacity">
-                ABOUT ME
-              </Link>
+            <nav className="flex items-center gap-[2px] font-sans font-medium text-[16px] tracking-[-0.04em] uppercase">
+              <ScrambleLink href="/" text="HOME" isActive={isHomeActive} className="px-[8px] py-[5px]" />
+              <ScrambleLink href="/how-to-use" text="HOW TO USE" isActive={isHowToUseActive} className="px-[8px] py-[5px]" />
+              <ScrambleLink href="/about" text="ABOUT ME" isActive={isAboutActive} className="px-[8px] py-[5px]" />
             </nav>
 
             {/* Right side auth & github */}
-            <div className="flex items-center gap-5 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em]">
+            <div className="flex items-center gap-[2px] font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
+                className="flex items-center gap-1.5 px-[8px] py-[5px] hover:opacity-70 transition-opacity"
               >
                 <GithubIcon size={18} />
                 <span>0</span>
@@ -66,16 +68,16 @@ export function Header() {
               {!BYPASS_AUTH ? (
                 <>
                   <Show when="signed-out">
-                    <div className="flex items-center gap-1.5 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em]">
+                    <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
                       <SignInButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em]">
-                          Login
+                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                          LOGIN
                         </button>
                       </SignInButton>
                       <span className="opacity-40">/</span>
                       <SignUpButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em]">
-                          Signup
+                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                          SIGNUP
                         </button>
                       </SignUpButton>
                     </div>
@@ -93,8 +95,8 @@ export function Header() {
                 </>
               ) : (
                 <SignInButton mode="modal">
-                  <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em]">
-                    Login/Signup
+                  <button className="px-[8px] py-[5px] hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                    LOGIN / SIGNUP
                   </button>
                 </SignInButton>
               )}
@@ -146,28 +148,28 @@ export function Header() {
         >
           <div className="flex flex-col">
             {/* Nav Links */}
-            <nav className="flex flex-col font-sans font-medium text-[20px] text-[#121212] tracking-[-0.04em] uppercase">
-              <Link
+            <nav className="flex flex-col font-sans font-medium text-[20px] tracking-[-0.04em] uppercase">
+              <ScrambleLink
                 href="/"
+                text="HOME"
+                isActive={isHomeActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px] hover:opacity-70 transition-opacity"
-              >
-                HOME
-              </Link>
-              <Link
+                className="py-[12px]"
+              />
+              <ScrambleLink
                 href="/how-to-use"
+                text="HOW TO USE"
+                isActive={isHowToUseActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px] hover:opacity-70 transition-opacity"
-              >
-                HOW TO USE
-              </Link>
-              <Link
+                className="py-[12px]"
+              />
+              <ScrambleLink
                 href="/about"
+                text="ABOUT ME"
+                isActive={isAboutActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px] hover:opacity-70 transition-opacity"
-              >
-                ABOUT ME
-              </Link>
+                className="py-[12px]"
+              />
             </nav>
 
             {/* Bottom Section - 150px distance from About Me */}
@@ -216,3 +218,4 @@ export function Header() {
     </header>
   )
 }
+
