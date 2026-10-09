@@ -26,6 +26,7 @@ export function SectionCard({
   const [isMobile, setIsMobile] = useState(false)
   const [isInView, setIsInView] = useState(false)
   const [isNearViewport, setIsNearViewport] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -38,6 +39,13 @@ export function SectionCard({
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // If no thumbnail available, mark as loaded immediately
+  useEffect(() => {
+    if (!thumbnailUrl && !videoUrl) {
+      setIsLoaded(true)
+    }
+  }, [thumbnailUrl, videoUrl])
 
   // Intersection Observer for Lazy Rendering (Video)
   useEffect(() => {
@@ -90,6 +98,10 @@ export function SectionCard({
   const hasThumbnail = !!thumbnailUrl && thumbnailUrl !== ''
   const showVideo = !isMobile && isHovered && !!videoUrl && isNearViewport
 
+  const handleMediaLoad = () => {
+    setIsLoaded(true)
+  }
+
   return (
     <Link
       href={`/section/${slug}`}
@@ -101,6 +113,14 @@ export function SectionCard({
       <div className="flex flex-col h-full" ref={containerRef}>
         {/* Container for Image/Video (16:9, rounded-none, bg-white) */}
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-white rounded-none">
+          {/* Accent Color (#E74E1B) Downward Slide Curtain Loading Effect */}
+          <div
+            className={cn(
+              "absolute inset-0 bg-[#E74E1B] z-20 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none",
+              isLoaded ? "translate-y-[105%] opacity-0" : "translate-y-0 opacity-100"
+            )}
+          />
+
           {showVideo ? (
             <video
               ref={videoRef}
@@ -110,6 +130,7 @@ export function SectionCard({
               playsInline
               preload="none"
               poster={thumbnailUrl}
+              onLoadedData={handleMediaLoad}
               className={cn(
                 "absolute inset-0 h-full w-full object-cover transition-all duration-300 z-10 group-hover:scale-105",
                 isHovered ? "opacity-100" : "opacity-0"
@@ -123,6 +144,7 @@ export function SectionCard({
               src={thumbnailUrl}
               alt={title}
               fill
+              onLoad={handleMediaLoad}
               className={cn(
                 "object-cover transition-transform duration-300 group-hover:scale-105",
                 (showVideo && isHovered) ? "opacity-0" : "opacity-100"
