@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Check, Medal, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -55,12 +56,28 @@ export function FilterModal({
   const modalRef = useRef<HTMLDivElement>(null)
   const mobileModalRef = useRef<HTMLDivElement>(null)
   const [placement, setPlacement] = useState<'bottom' | 'top'>('bottom')
+  const [mounted, setMounted] = useState(false)
 
   // Mobile draft state
   const [mobileDraft, setMobileDraft] = useState<FilterState>({
     status: filterState.status,
     categories: [...filterState.categories],
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Lock body scroll when mobile modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalStyle = window.getComputedStyle(document.body).overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = originalStyle
+      }
+    }
+  }, [isOpen])
 
   // Sync mobile draft state whenever modal opens
   useEffect(() => {
@@ -103,7 +120,7 @@ export function FilterModal({
     }
   }, [isOpen])
 
-  // Close modal when clicking outside
+  // Close modal when clicking outside on desktop
   useEffect(() => {
     if (!isOpen) return
 
@@ -185,17 +202,15 @@ export function FilterModal({
   const positionClasses =
     placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
 
-  return (
-    <>
-      {/* MOBILE BOTTOM SHEET OVERLAY (< md) */}
-      <div className="md:hidden fixed inset-0 bg-[#000000]/75 z-50 flex items-end justify-center animate-fade-in p-0">
+  const mobilePortalMarkup = mounted
+    ? createPortal(
         <div
           ref={mobileModalRef}
-          className="w-full bg-white border-t border-[#000000] p-[16px] rounded-none flex flex-col gap-4 max-h-[85vh] overflow-y-auto shadow-2xl"
+          className="md:hidden fixed inset-0 z-[99999] w-full h-[100dvh] max-h-[100dvh] bg-white p-[16px] pt-[max(16px,env(safe-area-inset-top,16px))] pb-[max(16px,env(safe-area-inset-bottom,16px))] rounded-none flex flex-col overflow-y-auto animate-fade-in"
         >
-          {/* Mobile Header: Title & 24px X Icon (No border line - Số 1) */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-[20px] font-bold text-[#000000] tracking-[-0.03em] p-0 m-0 leading-tight select-none">
+          {/* Mobile Header: Title & 24px X Icon */}
+          <div className="flex items-center justify-between shrink-0 mb-6">
+            <h2 className="text-[24px] font-bold text-[#000000] tracking-[-0.03em] p-0 m-0 leading-tight select-none">
               Filter
             </h2>
             <button
@@ -209,7 +224,7 @@ export function FilterModal({
           </div>
 
           {/* Mobile Section 1: Status */}
-          <div className="flex flex-col gap-[8px]">
+          <div className="flex flex-col gap-[10px] mb-6">
             <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] select-none">
               Status
             </span>
@@ -223,7 +238,7 @@ export function FilterModal({
                     onClick={() => !item.disabled && handleMobileStatusChange(item.id)}
                     disabled={item.disabled}
                     type="button"
-                    className={`flex items-center gap-[8px] px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                    className={`flex items-center gap-[8px] px-[14px] py-[9px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
                       item.disabled
                         ? 'bg-white border-[#000000]/10 text-[#000000]/30 cursor-not-allowed opacity-50'
                         : isActive
@@ -247,7 +262,7 @@ export function FilterModal({
           </div>
 
           {/* Mobile Section 2: Category */}
-          <div className="flex flex-col gap-[8px]">
+          <div className="flex flex-col gap-[10px]">
             <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] select-none">
               Category
             </span>
@@ -255,7 +270,7 @@ export function FilterModal({
               <button
                 onClick={handleMobileCategoryAllSelect}
                 type="button"
-                className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                className={`px-[14px] py-[9px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
                   isMobileAllCategories
                     ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
                     : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5'
@@ -272,7 +287,7 @@ export function FilterModal({
                     key={cat}
                     onClick={() => handleMobileCategoryToggle(cat)}
                     type="button"
-                    className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                    className={`px-[14px] py-[9px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
                       isActive
                         ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
                         : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5'
@@ -285,8 +300,8 @@ export function FilterModal({
             </div>
           </div>
 
-          {/* Mobile Footer: 2 Action Buttons (Ghost & Accent) (Gap to pills above: 32px) */}
-          <div className="grid grid-cols-2 gap-3 mt-[32px]">
+          {/* Mobile Footer: 2 Action Buttons placed 32px below Category */}
+          <div className="grid grid-cols-2 gap-3 mt-[32px] shrink-0">
             <Button
               variant="ghost"
               borderRadius="full"
@@ -306,8 +321,15 @@ export function FilterModal({
               Apply
             </Button>
           </div>
-        </div>
-      </div>
+        </div>,
+        document.body
+      )
+    : null
+
+  return (
+    <>
+      {/* MOBILE FULL-SCREEN OVERLAY (Rendered via Portal to document.body) */}
+      {mobilePortalMarkup}
 
       {/* DESKTOP POPOVER DROPDOWN (>= md) */}
       <div

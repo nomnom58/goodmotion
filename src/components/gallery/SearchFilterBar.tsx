@@ -29,10 +29,25 @@ export function SearchFilterBar({
 }: SearchFilterBarProps) {
   const [searchQuery, setSearchQuery] = useState(value)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [placeholder, setPlaceholder] = useState('Search component...')
 
   useEffect(() => {
     setSearchQuery(value)
   }, [value])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setPlaceholder('Search')
+      } else {
+        setPlaceholder('Search component...')
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -64,7 +79,7 @@ export function SearchFilterBar({
           type="text"
           value={searchQuery}
           onChange={handleChange}
-          placeholder="Search component..."
+          placeholder={placeholder}
           className="bg-transparent border-none outline-none text-[16px] leading-none font-medium text-[#000000] placeholder:text-black/25 p-0 m-0 flex-1 min-w-0 h-5"
         />
         {searchQuery.length > 0 && (
