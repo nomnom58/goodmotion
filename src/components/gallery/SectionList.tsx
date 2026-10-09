@@ -61,6 +61,10 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
     setSearchQuery('')
   }
 
+  const handleApplyMobileFilters = (newStatus: string, newCategories: string[]) => {
+    setFilterState({ status: newStatus, categories: newCategories })
+  }
+
   // Filter sections by search query, status, and categories
   const filteredSections = sections.filter((section) => {
     // 1. Search Query filter
@@ -110,6 +114,7 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
         onCategoryToggle={handleCategoryToggle}
         onCategoryAllSelect={handleCategoryAllSelect}
         onResetFilters={handleResetFilters}
+        onApplyMobileFilters={handleApplyMobileFilters}
       />
 
       {/* Empty State UI when search/filter has no results */}

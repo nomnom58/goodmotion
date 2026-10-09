@@ -12,6 +12,7 @@ interface SearchFilterBarProps {
   onCategoryToggle: (category: string) => void
   onCategoryAllSelect: () => void
   onResetFilters: () => void
+  onApplyMobileFilters?: (newStatus: string, newCategories: string[]) => void
   className?: string
 }
 
@@ -23,6 +24,7 @@ export function SearchFilterBar({
   onCategoryToggle,
   onCategoryAllSelect,
   onResetFilters,
+  onApplyMobileFilters,
   className = '',
 }: SearchFilterBarProps) {
   const [searchQuery, setSearchQuery] = useState(value)
@@ -51,8 +53,10 @@ export function SearchFilterBar({
     <div className={`w-full flex items-center justify-between mb-[24px] ${className}`}>
       {/* Left side: Search input with icon & Clear button */}
       <div
-        className={`flex items-center gap-2.5 py-[4px] transition-all duration-200 origin-left border-b w-[220px] ${
-          searchQuery.length > 0 ? 'border-black/20' : 'border-transparent'
+        className={`flex items-center gap-2.5 py-[4px] transition-all duration-200 origin-left border-b ${
+          searchQuery.length > 0
+            ? 'w-[180px] sm:w-[220px] border-black/20'
+            : 'w-[220px] border-transparent'
         }`}
       >
         <Search size={20} className="text-black/50 shrink-0 select-none" />
@@ -113,6 +117,7 @@ export function SearchFilterBar({
           onStatusChange={onStatusChange}
           onCategoryToggle={onCategoryToggle}
           onCategoryAllSelect={onCategoryAllSelect}
+          onApplyMobileFilters={onApplyMobileFilters}
         />
       </div>
     </div>

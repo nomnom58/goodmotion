@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useRef, useEffect, useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Medal, X } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 export interface FilterState {
   status: string // 'all' | 'recently' | 'trending' | 'most_copied' | 'recommend'
@@ -15,6 +16,7 @@ interface FilterModalProps {
   onStatusChange: (status: string) => void
   onCategoryToggle: (category: string) => void
   onCategoryAllSelect: () => void
+  onApplyMobileFilters?: (newStatus: string, newCategories: string[]) => void
   className?: string
 }
 
@@ -23,10 +25,8 @@ const GreenAtIcon = () => (
   <span className="font-bold text-[#22C55E] text-[15px] select-none leading-none">@</span>
 )
 
-const OrangeRibbonIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EA580C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-  </svg>
+const OrangeMedalIcon = () => (
+  <Medal size={15} className="text-[#EA580C] shrink-0 stroke-[2.2]" />
 )
 
 const BlueBookmarkIcon = () => (
@@ -49,12 +49,30 @@ export function FilterModal({
   onStatusChange,
   onCategoryToggle,
   onCategoryAllSelect,
+  onApplyMobileFilters,
   className = '',
 }: FilterModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
+  const mobileModalRef = useRef<HTMLDivElement>(null)
   const [placement, setPlacement] = useState<'bottom' | 'top'>('bottom')
 
-  // Smart positioning: check if space below is sufficient, else pop up
+  // Mobile draft state
+  const [mobileDraft, setMobileDraft] = useState<FilterState>({
+    status: filterState.status,
+    categories: [...filterState.categories],
+  })
+
+  // Sync mobile draft state whenever modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setMobileDraft({
+        status: filterState.status,
+        categories: [...filterState.categories],
+      })
+    }
+  }, [isOpen, filterState])
+
+  // Smart positioning for desktop popover
   useEffect(() => {
     if (!isOpen) return
 
@@ -90,9 +108,14 @@ export function FilterModal({
     if (!isOpen) return
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose()
+      const target = event.target as Node
+      if (
+        modalRef.current?.contains(target) ||
+        mobileModalRef.current?.contains(target)
+      ) {
+        return
       }
+      onClose()
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -106,7 +129,7 @@ export function FilterModal({
   const statusItems = [
     { id: 'all', label: 'All', icon: null, disabled: false },
     { id: 'recently', label: 'Recently Added', icon: <GreenAtIcon />, disabled: false },
-    { id: 'trending', label: 'Trending', icon: <OrangeRibbonIcon />, disabled: false },
+    { id: 'trending', label: 'Trending', icon: <OrangeMedalIcon />, disabled: false },
     { id: 'most_copied', label: 'Most Copied', icon: <BlueBookmarkIcon />, disabled: false },
     { id: 'recommend', label: 'Recommend (Coming)', icon: <PurpleThumbIcon />, disabled: true },
   ]
@@ -120,110 +143,261 @@ export function FilterModal({
     'Interaction',
   ]
 
-  const isAllCategories = filterState.categories.length === 0
+  // Mobile handlers
+  const handleMobileStatusChange = (id: string) => {
+    setMobileDraft((prev) => ({ ...prev, status: id }))
+  }
+
+  const handleMobileCategoryToggle = (cat: string) => {
+    setMobileDraft((prev) => {
+      const exists = prev.categories.includes(cat)
+      const newCats = exists
+        ? prev.categories.filter((c) => c !== cat)
+        : [...prev.categories, cat]
+      return { ...prev, categories: newCats }
+    })
+  }
+
+  const handleMobileCategoryAllSelect = () => {
+    setMobileDraft((prev) => ({ ...prev, categories: [] }))
+  }
+
+  const handleMobileReset = () => {
+    setMobileDraft({ status: 'all', categories: [] })
+  }
+
+  const handleMobileApply = () => {
+    if (onApplyMobileFilters) {
+      onApplyMobileFilters(mobileDraft.status, mobileDraft.categories)
+    } else {
+      // Fallback
+      onStatusChange(mobileDraft.status)
+      if (mobileDraft.categories.length === 0) {
+        onCategoryAllSelect()
+      }
+    }
+    onClose()
+  }
+
+  const isDesktopAllCategories = filterState.categories.length === 0
+  const isMobileAllCategories = mobileDraft.categories.length === 0
 
   const positionClasses =
     placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
 
   return (
-    <div
-      ref={modalRef}
-      className={`absolute right-0 ${positionClasses} w-[400px] max-w-[90vw] bg-white border border-[#000000] p-[16px] z-50 rounded-none flex flex-col ${className}`}
-    >
-      {/* 2. Tiêu đề "Filter" - Font size 20px, Weight 700, Color #000000 */}
-      {/* Khoảng cách giữa title filter và Status: 16px (mb-[16px]) */}
-      <h2 className="text-[20px] font-bold text-[#000000] tracking-[-0.03em] p-0 m-0 leading-tight mb-[16px] select-none">
-        Filter
-      </h2>
+    <>
+      {/* MOBILE BOTTOM SHEET OVERLAY (< md) */}
+      <div className="md:hidden fixed inset-0 bg-[#000000]/75 z-50 flex items-end justify-center animate-fade-in p-0">
+        <div
+          ref={mobileModalRef}
+          className="w-full bg-white border-t border-[#000000] p-[16px] rounded-none flex flex-col gap-4 max-h-[85vh] overflow-y-auto shadow-2xl"
+        >
+          {/* Mobile Header: Title & 24px X Icon (No border line - Số 1) */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-[20px] font-bold text-[#000000] tracking-[-0.03em] p-0 m-0 leading-tight select-none">
+              Filter
+            </h2>
+            <button
+              onClick={onClose}
+              type="button"
+              aria-label="Close filter modal"
+              className="p-1 text-[#000000] hover:opacity-70 transition-opacity border-none bg-transparent cursor-pointer"
+            >
+              <X size={24} className="stroke-[2]" />
+            </button>
+          </div>
 
-      {/* Section 1: Status */}
-      {/* Khoảng cách giữa nhóm Status và nhóm Category: 16px (mb-[16px]) */}
-      <div className="flex flex-col mb-[16px]">
-        {/* Sub-header "Status" - Font size 14px, Weight 500, Color 000000 50% */}
-        <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] mb-[8px] select-none">
-          Status
-        </span>
-        {/* 3. Quy chuẩn Pill Status (Hàng dọc) - khoảng cách giữa các pill: 8px */}
-        <div className="flex flex-col gap-[8px] items-start">
-          {statusItems.map((item) => {
-            const isActive = filterState.status === item.id
+          {/* Mobile Section 1: Status */}
+          <div className="flex flex-col gap-[8px]">
+            <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] select-none">
+              Status
+            </span>
+            <div className="flex flex-col gap-[8px] items-start">
+              {statusItems.map((item) => {
+                const isActive = mobileDraft.status === item.id
 
-            return (
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => !item.disabled && handleMobileStatusChange(item.id)}
+                    disabled={item.disabled}
+                    type="button"
+                    className={`flex items-center gap-[8px] px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                      item.disabled
+                        ? 'bg-white border-[#000000]/10 text-[#000000]/30 cursor-not-allowed opacity-50'
+                        : isActive
+                        ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
+                        : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5'
+                    }`}
+                  >
+                    {isActive ? (
+                      <span className="w-4 h-4 rounded-full bg-[#E74E1B] flex items-center justify-center shrink-0">
+                        <Check size={11} className="text-white stroke-[3]" />
+                      </span>
+                    ) : (
+                      <span className="w-4 h-4 rounded-full border border-[#000000]/20 shrink-0 bg-transparent" />
+                    )}
+                    {item.icon && <span className="flex items-center shrink-0">{item.icon}</span>}
+                    <span>{item.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Section 2: Category */}
+          <div className="flex flex-col gap-[8px]">
+            <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] select-none">
+              Category
+            </span>
+            <div className="flex flex-wrap gap-[8px] items-center">
               <button
-                key={item.id}
-                onClick={() => !item.disabled && onStatusChange(item.id)}
-                disabled={item.disabled}
-                type="button"
-                className={`flex items-center gap-[8px] px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
-                  item.disabled
-                    ? 'bg-white border-[#000000]/10 text-[#000000]/30 cursor-not-allowed opacity-50'
-                    : isActive
-                    ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
-                    : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
-                }`}
-              >
-                {/* Radio / Check Circle Icon */}
-                {isActive ? (
-                  <span className="w-4 h-4 rounded-full bg-[#E74E1B] flex items-center justify-center shrink-0">
-                    <Check size={11} className="text-white stroke-[3]" />
-                  </span>
-                ) : (
-                  <span className="w-4 h-4 rounded-full border border-[#000000]/20 shrink-0 bg-transparent" />
-                )}
-
-                {/* Optional Custom Colored Icon */}
-                {item.icon && <span className="flex items-center shrink-0">{item.icon}</span>}
-
-                <span>{item.label}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Section 2: Category */}
-      <div className="flex flex-col">
-        {/* Sub-header "Category" - Font size 14px, Weight 500, Color 000000 50% */}
-        <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] mb-[8px] select-none">
-          Category
-        </span>
-        <div className="flex flex-wrap gap-[8px] items-center">
-          {/* All Category Pill */}
-          <button
-            onClick={onCategoryAllSelect}
-            type="button"
-            className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
-              isAllCategories
-                ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
-                : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
-            }`}
-          >
-            All category
-          </button>
-
-          {/* Individual Category Pills */}
-          {categoryList.map((cat) => {
-            const isActive = filterState.categories.includes(cat)
-
-            return (
-              <button
-                key={cat}
-                onClick={() => onCategoryToggle(cat)}
+                onClick={handleMobileCategoryAllSelect}
                 type="button"
                 className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
-                  isActive
+                  isMobileAllCategories
                     ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
-                    : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
+                    : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5'
                 }`}
               >
-                {cat}
+                All category
               </button>
-            )
-          })}
+
+              {categoryList.map((cat) => {
+                const isActive = mobileDraft.categories.includes(cat)
+
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleMobileCategoryToggle(cat)}
+                    type="button"
+                    className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                      isActive
+                        ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
+                        : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Footer: 2 Action Buttons (Ghost & Accent) (Gap to pills above: 32px) */}
+          <div className="grid grid-cols-2 gap-3 mt-[32px]">
+            <Button
+              variant="ghost"
+              borderRadius="full"
+              size="lg"
+              onClick={handleMobileReset}
+              className="w-full py-3 text-[16px] font-bold"
+            >
+              Reset
+            </Button>
+            <Button
+              variant="accent"
+              borderRadius="full"
+              size="lg"
+              onClick={handleMobileApply}
+              className="w-full py-3 text-[16px] font-bold"
+            >
+              Apply
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* DESKTOP POPOVER DROPDOWN (>= md) */}
+      <div
+        ref={modalRef}
+        className={`hidden md:flex absolute right-0 ${positionClasses} w-[400px] max-w-[90vw] bg-white border border-[#000000] p-[16px] z-50 rounded-none flex-col ${className}`}
+      >
+        <h2 className="text-[20px] font-bold text-[#000000] tracking-[-0.03em] p-0 m-0 leading-tight mb-[16px] select-none">
+          Filter
+        </h2>
+
+        {/* Section 1: Status */}
+        <div className="flex flex-col mb-[16px]">
+          <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] mb-[8px] select-none">
+            Status
+          </span>
+          <div className="flex flex-col gap-[8px] items-start">
+            {statusItems.map((item) => {
+              const isActive = filterState.status === item.id
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => !item.disabled && onStatusChange(item.id)}
+                  disabled={item.disabled}
+                  type="button"
+                  className={`flex items-center gap-[8px] px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                    item.disabled
+                      ? 'bg-white border-[#000000]/10 text-[#000000]/30 cursor-not-allowed opacity-50'
+                      : isActive
+                      ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
+                      : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
+                  }`}
+                >
+                  {isActive ? (
+                    <span className="w-4 h-4 rounded-full bg-[#E74E1B] flex items-center justify-center shrink-0">
+                      <Check size={11} className="text-white stroke-[3]" />
+                    </span>
+                  ) : (
+                    <span className="w-4 h-4 rounded-full border border-[#000000]/20 shrink-0 bg-transparent" />
+                  )}
+                  {item.icon && <span className="flex items-center shrink-0">{item.icon}</span>}
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Section 2: Category */}
+        <div className="flex flex-col">
+          <span className="text-[14px] font-medium text-[#000000]/50 tracking-[-0.02em] mb-[8px] select-none">
+            Category
+          </span>
+          <div className="flex flex-wrap gap-[8px] items-center">
+            <button
+              onClick={onCategoryAllSelect}
+              type="button"
+              className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                isDesktopAllCategories
+                  ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
+                  : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
+              }`}
+            >
+              All category
+            </button>
+
+            {categoryList.map((cat) => {
+              const isActive = filterState.categories.includes(cat)
+
+              return (
+                <button
+                  key={cat}
+                  onClick={() => onCategoryToggle(cat)}
+                  type="button"
+                  className={`px-[12px] py-[8px] rounded-[24px] text-[16px] font-medium transition-all duration-150 border cursor-pointer select-none leading-none ${
+                    isActive
+                      ? 'bg-[#E74E1B]/[0.05] border-[#E74E1B] text-[#E74E1B]'
+                      : 'bg-white border-[#000000]/10 text-[#000000] hover:bg-[#000000]/5 hover:border-[#000000]/10'
+                  }`}
+                >
+                  {cat}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
+
 
 
