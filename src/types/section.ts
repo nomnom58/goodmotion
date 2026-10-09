@@ -27,4 +27,8 @@ export interface SectionCardData {
   videoUrl?: string
   index?: string
   category?: string
+  tags?: string[]
+  is_trending?: boolean
+  is_new?: boolean
 }
+

@@ -1,22 +1,32 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, ChevronDown, X } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
+import { FilterModal, FilterState } from './FilterModal'
 
 interface SearchFilterBarProps {
   value?: string
   onSearchChange?: (value: string) => void
-  onFilterClick?: () => void
+  filterState: FilterState
+  onStatusChange: (status: string) => void
+  onCategoryToggle: (category: string) => void
+  onCategoryAllSelect: () => void
+  onResetFilters: () => void
   className?: string
 }
 
 export function SearchFilterBar({
   value = '',
   onSearchChange,
-  onFilterClick,
+  filterState,
+  onStatusChange,
+  onCategoryToggle,
+  onCategoryAllSelect,
+  onResetFilters,
   className = '',
 }: SearchFilterBarProps) {
   const [searchQuery, setSearchQuery] = useState(value)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   useEffect(() => {
     setSearchQuery(value)
@@ -32,6 +42,10 @@ export function SearchFilterBar({
     setSearchQuery('')
     if (onSearchChange) onSearchChange('')
   }
+
+  // Calculate active filter count
+  const activeCount =
+    (filterState.status !== 'all' ? 1 : 0) + filterState.categories.length
 
   return (
     <div className={`w-full flex items-center justify-between mb-[24px] ${className}`}>
@@ -61,15 +75,47 @@ export function SearchFilterBar({
         )}
       </div>
 
-      {/* Right side: Filter button */}
-      <button
-        onClick={onFilterClick}
-        type="button"
-        className="flex items-center gap-1.5 py-[4px] bg-transparent border-none outline-none cursor-pointer p-0 m-0 text-[16px] leading-none font-medium text-[#000000] hover:opacity-70 transition-opacity"
-      >
-        <span>Filter</span>
-        <ChevronDown size={20} className="text-[#000000]" />
-      </button>
+      {/* Right side: Reset button & Filter button with FilterModal */}
+      <div className="relative flex items-center gap-3">
+        {/* Reset button outside bar when active filters > 0 */}
+        {activeCount > 0 && (
+          <button
+            onClick={onResetFilters}
+            type="button"
+            className="text-[#E74E1B] text-[16px] font-medium leading-none hover:opacity-80 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 select-none"
+          >
+            Reset
+          </button>
+        )}
+
+        {/* Filter Trigger Button */}
+        <button
+          onClick={() => setIsFilterOpen((prev) => !prev)}
+          type="button"
+          className="flex items-center gap-1.5 py-[4px] bg-transparent border-none outline-none cursor-pointer p-0 m-0 text-[16px] leading-none font-medium text-[#000000] hover:opacity-70 transition-opacity select-none"
+        >
+          <span>
+            Filter{activeCount > 0 ? ` (${activeCount})` : ''}
+          </span>
+          <ChevronDown
+            size={20}
+            className={`text-[#000000] transition-transform duration-200 ${
+              isFilterOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        {/* Filter Dropdown Modal */}
+        <FilterModal
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          filterState={filterState}
+          onStatusChange={onStatusChange}
+          onCategoryToggle={onCategoryToggle}
+          onCategoryAllSelect={onCategoryAllSelect}
+        />
+      </div>
     </div>
   )
 }
+
