@@ -206,7 +206,7 @@ export function FilterModal({
     ? createPortal(
         <div
           ref={mobileModalRef}
-          className="md:hidden fixed inset-0 z-[99999] w-full h-[100dvh] max-h-[100dvh] bg-white p-[16px] pt-[max(16px,env(safe-area-inset-top,16px))] pb-[max(16px,env(safe-area-inset-bottom,16px))] rounded-none flex flex-col overflow-y-auto animate-fade-in"
+          className="md:hidden fixed inset-0 z-[99999] w-full h-[100dvh] max-h-[100dvh] bg-white p-[16px] pt-[max(16px,env(safe-area-inset-top,16px))] pb-[max(16px,env(safe-area-inset-bottom,16px))] rounded-none flex flex-col overflow-y-auto animate-slide-up-fullscreen"
         >
           {/* Mobile Header: Title & 24px X Icon */}
           <div className="flex items-center justify-between shrink-0 mb-6">

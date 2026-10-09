@@ -18,7 +18,6 @@ interface SectionCardProps {
 export function SectionCard({
   slug,
   title,
-  description,
   thumbnailUrl,
   videoUrl,
   index,
@@ -48,14 +47,11 @@ export function SectionCard({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsNearViewport(true)
-          // Optimization: Once rendered, we can keep it or disconnect 
-          // but for dynamic large lists, keeping it might be better 
-          // to un-render off-screen ones too.
         } else {
           setIsNearViewport(false)
         }
       },
-      { rootMargin: '500px' } // Pre-render when 500px close
+      { rootMargin: '500px' }
     )
 
     observer.observe(containerRef.current)
@@ -70,7 +66,7 @@ export function SectionCard({
       ([entry]) => {
         setIsInView(entry.isIntersecting)
       },
-      { threshold: 0.6 } // Play when 60% of card is visible
+      { threshold: 0.6 }
     )
 
     observer.observe(containerRef.current)
@@ -84,34 +80,26 @@ export function SectionCard({
     const shouldPlay = isMobile ? isInView : isHovered
 
     if (shouldPlay) {
-      videoRef.current.play().catch(() => {
-        // Handle potential autoplay restrictions
-      })
+      videoRef.current.play().catch(() => {})
     } else {
       videoRef.current.pause()
-      // Optimization: Don't resetting currentTime to 0 on mobile for smoother experience
       if (!isMobile) videoRef.current.currentTime = 0
     }
   }, [isHovered, isInView, isMobile, videoUrl, isNearViewport])
 
-  // Handle Thumbnail Fallback
   const hasThumbnail = !!thumbnailUrl && thumbnailUrl !== ''
-  
-  // Logic: 
-  // - Show video ONLY on Desktop AND when Hovered AND isNearViewport.
-  // - Mobile never shows video on Home/Related cards (per user request).
   const showVideo = !isMobile && isHovered && !!videoUrl && isNearViewport
 
   return (
     <Link
       href={`/section/${slug}`}
-      className="group block transition-all"
+      className="group block transition-colors bg-white hover:bg-[#000000]/5 p-[24px] h-full"
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
-      <div className="flex flex-col gap-3" ref={containerRef}>
-        {/* Container for Image/Video */}
-        <div className="relative aspect-16-9 w-full overflow-hidden bg-tag-bg group-hover:shadow-card-hover transition-shadow rounded-sm">
+      <div className="flex flex-col h-full" ref={containerRef}>
+        {/* Container for Image/Video (16:9, rounded-none, bg-white) */}
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-white rounded-none">
           {showVideo ? (
             <video
               ref={videoRef}
@@ -122,20 +110,20 @@ export function SectionCard({
               preload="none"
               poster={thumbnailUrl}
               className={cn(
-                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300 z-10",
+                "absolute inset-0 h-full w-full object-cover transition-all duration-300 z-10 group-hover:scale-105",
                 isHovered ? "opacity-100" : "opacity-0"
               )}
             />
           ) : null}
 
-          {/* Show Image if available */}
+          {/* Thumbnail Image with zoom/scale effect */}
           {hasThumbnail ? (
             <Image
               src={thumbnailUrl}
               alt={title}
               fill
               className={cn(
-                "object-cover transition-opacity duration-300",
+                "object-cover transition-transform duration-300 group-hover:scale-105",
                 (showVideo && isHovered) ? "opacity-0" : "opacity-100"
               )}
               loading={index && parseInt(index) <= 2 ? undefined : "lazy"}
@@ -152,15 +140,11 @@ export function SectionCard({
               </span>
             </div>
           )}
-
-          {/* Subtle Overlay on Hover */}
-          {!isMobile && (
-            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-          )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <h3 className="font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] leading-[1.2] flex gap-2">
+        {/* Title (mt-16px, text-14px, font-medium, text-[#000000]) */}
+        <div className="mt-[16px] flex flex-col">
+          <h3 className="font-sans font-medium text-[14px] text-[#000000] select-none">
             {title}
           </h3>
         </div>

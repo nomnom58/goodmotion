@@ -17,7 +17,7 @@
 }
 
 :root {
-  --background: #FFFFFF;
+  --background: #F2F2F2;
   --foreground: #1F1F1F;
 }
 
@@ -49,5 +49,20 @@ body {
 
 @utility animate-slide-in {
   animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpFullscreen {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@utility animate-slide-up-fullscreen {
+  animation: slideUpFullscreen 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
