@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import { SectionList } from '@/components/gallery/SectionList'
 import { SectionSkeleton } from '@/components/ui/Skeleton'
 import { getSections } from '@/actions/sections'
-import { SearchFilterBar } from '@/components/gallery/SearchFilterBar'
 
 export const revalidate = 3600
 
@@ -51,10 +50,7 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Search & Filter Bar */}
-      <SearchFilterBar />
-
-      {/* Main Grid with Suspense */}
+      {/* Main Grid with Suspense (includes SearchFilterBar) */}
       <Suspense fallback={<GridSkeleton />}>
         <SectionGrid />
       </Suspense>

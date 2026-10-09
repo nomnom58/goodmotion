@@ -47,36 +47,36 @@ export function Header() {
           {/* Row 2: Navigation Menu Bar below Logo */}
           <div className="flex items-center justify-between w-full py-4 text-[14px]">
             {/* Left side links */}
-            <nav className="flex items-center gap-[2px] font-sans font-medium text-[16px] tracking-[-0.04em] uppercase">
+            <nav className="flex items-center gap-[2px] font-sans font-medium text-[14px] tracking-[-0.04em] uppercase">
               <ScrambleLink href="/" text="HOME" isActive={isHomeActive} className="px-[8px] py-[5px]" />
               <ScrambleLink href="/how-to-use" text="HOW TO USE" isActive={isHowToUseActive} className="px-[8px] py-[5px]" />
               <ScrambleLink href="/about" text="ABOUT ME" isActive={isAboutActive} className="px-[8px] py-[5px]" />
             </nav>
 
             {/* Right side auth & github */}
-            <div className="flex items-center gap-[2px] font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+            <div className="flex items-center gap-[2px] font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 px-[8px] py-[5px] hover:opacity-70 transition-opacity"
               >
-                <GithubIcon size={18} />
+                <GithubIcon size={16} />
                 <span>0</span>
               </a>
 
               {!BYPASS_AUTH ? (
                 <>
                   <Show when="signed-out">
-                    <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                    <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
                       <SignInButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
                           LOGIN
                         </button>
                       </SignInButton>
                       <span className="opacity-40">/</span>
                       <SignUpButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
                           SIGNUP
                         </button>
                       </SignUpButton>
@@ -95,7 +95,7 @@ export function Header() {
                 </>
               ) : (
                 <SignInButton mode="modal">
-                  <button className="px-[8px] py-[5px] hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[16px] text-[#121212] tracking-[-0.04em] uppercase">
+                  <button className="px-[8px] py-[5px] hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
                     LOGIN / SIGNUP
                   </button>
                 </SignInButton>
