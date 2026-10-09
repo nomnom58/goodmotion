@@ -7,6 +7,7 @@ import { PostHogProvider } from '@/providers/PostHogProvider'
 import { BYPASS_AUTH } from '@/lib/auth-config'
 import { Header } from '@/components/layout/Header'
 import { ToastProvider } from '@/components/ui/Toast'
+import { CustomCursor } from '@/components/ui/CustomCursor'
 import './globals.css'
 
 
@@ -48,6 +49,7 @@ export default function RootLayout({
         >
           <body className="min-h-full flex flex-col bg-[#F2F2F2] text-primary-text font-sans selection:bg-brand/10 selection:text-brand">
             <ToastProvider>
+              <CustomCursor />
               <div className="max-w-[1440px] mx-auto w-full min-h-screen flex flex-col bg-white border-x border-[#000000]/10">
                 <Header />
 

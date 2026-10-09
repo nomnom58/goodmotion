@@ -65,7 +65,7 @@ export function SearchFilterBar({
     (filterState.status !== 'all' ? 1 : 0) + filterState.categories.length
 
   return (
-    <div className={`w-full flex items-center justify-between mb-[24px] ${className}`}>
+    <div className={`w-full flex items-center justify-between mb-[12px] ${className}`}>
       {/* Left side: Search input with icon & Clear button */}
       <div
         className={`flex items-center gap-2.5 py-[4px] transition-all duration-200 origin-left border-b ${
