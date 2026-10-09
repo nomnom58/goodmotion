@@ -68,9 +68,9 @@ export function FilterModal({
     setMounted(true)
   }, [])
 
-  // Lock body scroll when mobile modal is open
+  // Lock body scroll ONLY when mobile modal is open (< 768px)
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth < 768) {
       const originalStyle = window.getComputedStyle(document.body).overflow
       document.body.style.overflow = 'hidden'
       return () => {
