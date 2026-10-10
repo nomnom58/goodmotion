@@ -6,6 +6,7 @@ import { Instrument_Serif, JetBrains_Mono, Inter } from 'next/font/google'
 import { PostHogProvider } from '@/providers/PostHogProvider'
 import { BYPASS_AUTH } from '@/lib/auth-config'
 import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { ToastProvider } from '@/components/ui/Toast'
 import { CustomCursor } from '@/components/ui/CustomCursor'
 import './globals.css'
@@ -57,18 +58,7 @@ export default function RootLayout({
                   {children}
                 </main>
 
-                <footer className="w-full p-4 pt-10 border-t border-border-color mt-auto">
-                  <div className="flex flex-col items-start gap-4">
-                    <Image 
-                      src="/logo.png" 
-                      alt="GOOD MOTION" 
-                      width={120} 
-                      height={32} 
-                      className="h-6 w-auto object-contain"
-                    />
-                    <div className="text-[14px] text-secondary-text">© 2026 GOOD MOTION</div>
-                  </div>
-                </footer>
+                <Footer />
               </div>
             </ToastProvider>
           </body>

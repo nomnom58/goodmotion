@@ -47,14 +47,14 @@ export function Header() {
           {/* Row 2: Navigation Menu Bar below Logo */}
           <div className="flex items-center justify-between w-full py-4 text-[14px]">
             {/* Left side links */}
-            <nav className="flex items-center gap-[2px] font-sans font-medium text-[14px] tracking-[-0.04em] uppercase">
+            <nav className="flex items-center gap-0 font-sans font-medium text-[14px] uppercase">
               <ScrambleLink href="/" text="HOME" isActive={isHomeActive} className="px-[8px] py-[5px]" />
               <ScrambleLink href="/how-to-use" text="HOW TO USE" isActive={isHowToUseActive} className="px-[8px] py-[5px]" />
               <ScrambleLink href="/about" text="ABOUT ME" isActive={isAboutActive} className="px-[8px] py-[5px]" />
             </nav>
 
             {/* Right side auth & github */}
-            <div className="flex items-center gap-[2px] font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
+            <div className="flex items-center gap-0 font-sans font-medium text-[14px] text-[#121212] uppercase">
               <a
                 href="https://github.com"
                 target="_blank"
@@ -68,7 +68,7 @@ export function Header() {
               {!BYPASS_AUTH ? (
                 <>
                   <Show when="signed-out">
-                    <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
+                    <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[14px] text-[#121212] uppercase">
                       <SignInButton mode="modal">
                         <span className="cursor-pointer">
                           <ScrambleLink href="#" text="LOGIN" className="px-[4px] py-[2px]" />
@@ -148,7 +148,7 @@ export function Header() {
         >
           <div className="flex flex-col">
             {/* Nav Links - Left Aligned */}
-            <nav className="flex flex-col items-start text-left font-sans font-medium text-[20px] tracking-[-0.04em] uppercase">
+            <nav className="flex flex-col items-start text-left font-sans font-medium text-[20px] uppercase">
               <ScrambleLink
                 href="/"
                 text="HOME"
@@ -178,7 +178,7 @@ export function Header() {
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 py-[12px] font-sans font-medium text-[20px] text-[#121212] tracking-[-0.04em] hover:opacity-70"
+                className="flex items-center gap-2 py-[12px] font-sans font-medium text-[20px] text-[#121212] hover:opacity-70"
               >
                 <GithubIcon size={20} />
                 <span>0</span>
