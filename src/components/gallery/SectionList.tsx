@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { SectionCard } from './SectionCard'
 import { SearchFilterBar } from './SearchFilterBar'
 import { FilterState } from './FilterModal'
@@ -119,16 +120,35 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
 
       {/* Empty State UI when search/filter has no results */}
       {filteredSections.length === 0 && hasActiveFilters ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-[16px] font-medium text-black/70 mb-4">
-            No components found matching your search or filter criteria
+        <div className="flex flex-col items-center justify-center py-[64px] px-[24px] text-center w-full bg-white border border-[#000000]/10">
+          {/* Illustration Image: 300px mobile (mb-24px), 500px desktop/tablet (mb-48px) */}
+          <div className="relative w-[300px] sm:w-[500px] aspect-[5/3] mb-[24px] sm:mb-[48px]">
+            <Image
+              src="/empty-state.png"
+              alt="No components found"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          {/* Title: 16px, fontweight 700 all breakpoints */}
+          <h3 className="text-[16px] font-bold text-[#000000] mb-[8px] select-none">
+            No components found
+          </h3>
+
+          {/* Subtitle: 16px, fontweight 500, color #000000 50%, max-width 280px */}
+          <p className="text-[16px] font-medium text-[#000000]/50 max-w-[280px] mb-[24px]">
+            No components match your search or filter criteria. Try adjusting your search or clearing your filters.
           </p>
+
+          {/* Reset Filters Action Button */}
           <button
             onClick={handleResetFilters}
             type="button"
-            className="px-6 py-2.5 bg-[#121212] text-white text-[14px] font-medium rounded-full hover:opacity-80 transition-opacity cursor-pointer border-none"
+            className="text-[14px] font-bold text-[#E74E1B] uppercase hover:opacity-75 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 select-none"
           >
-            Reset Filters
+            RESET FILTERS
           </button>
         </div>
       ) : (
