@@ -76,3 +76,13 @@ body.custom-cursor-active * {
   cursor: none !important;
 }
 
+@keyframes squarePulse {
+  0%, 100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+

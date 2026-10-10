@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { SectionCard } from './SectionCard'
 import { SearchFilterBar } from './SearchFilterBar'
 import { FilterState } from './FilterModal'
-import { Button } from '@/components/ui/Button'
 import { getSections } from '@/actions/sections'
 import { SectionCardData } from '@/types/section'
 
@@ -24,19 +23,30 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleLoadMore = async () => {
-    if (isLoading || !hasMore) return
+  // Infinite Scroll & Duplicate Fetch Guard refs
+  const isLoadingRef = useRef(false)
+  const observerRef = useRef<HTMLDivElement | null>(null)
 
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingRef.current || !hasMore) return
+
+    // Lock fetch guard
+    isLoadingRef.current = true
     setIsLoading(true)
+
     const nextOffset = sections.length
     const { success, data, hasMore: newHasMore } = await getSections(6, nextOffset)
 
-    if (success && data) {
+    if (success && data && data.length > 0) {
       setSections((prev) => [...prev, ...data])
       setHasMore(newHasMore)
+    } else {
+      setHasMore(false)
     }
+
     setIsLoading(false)
-  }
+    isLoadingRef.current = false
+  }, [hasMore, sections.length])
 
   // Filter state handlers
   const handleStatusChange = (status: string) => {
@@ -68,7 +78,6 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
 
   // Filter sections by search query, status, and categories
   const filteredSections = sections.filter((section) => {
-    // 1. Search Query filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim()
       const matchTitle = section.title?.toLowerCase().includes(query)
@@ -77,7 +86,6 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
       if (!matchTitle && !matchDescription && !matchTags) return false
     }
 
-    // 2. Category filter
     if (filterState.categories.length > 0) {
       const sectionCats = [
         ...(section.category ? [section.category] : []),
@@ -90,7 +98,6 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
       if (!hasMatch) return false
     }
 
-    // 3. Status filter
     if (filterState.status !== 'all') {
       if (filterState.status === 'trending' && !section.is_trending) return false
       if (filterState.status === 'recently' && !section.is_new) return false
@@ -103,6 +110,34 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
     searchQuery.trim() !== '' ||
     filterState.status !== 'all' ||
     filterState.categories.length > 0
+
+  // Attach IntersectionObserver for 100% Seamless Infinite Scroll with Pre-fetching Margin
+  useEffect(() => {
+    if (!hasMore || hasActiveFilters) return
+
+    const target = observerRef.current
+    if (!target) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0]
+        if (first.isIntersecting && !isLoadingRef.current) {
+          handleLoadMore()
+        }
+      },
+      {
+        root: null,
+        rootMargin: '300px', // Pre-fetching Margin: triggers 300px before user reaches the bottom
+        threshold: 0,
+      }
+    )
+
+    observer.observe(target)
+
+    return () => {
+      if (target) observer.unobserve(target)
+    }
+  }, [hasMore, hasActiveFilters, handleLoadMore])
 
   return (
     <div className="flex flex-col pb-20">
@@ -121,7 +156,6 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
       {/* Empty State UI when search/filter has no results */}
       {filteredSections.length === 0 && hasActiveFilters ? (
         <div className="flex flex-col items-center justify-center py-[64px] px-[24px] text-center w-full bg-white border border-[#000000]/10">
-          {/* Illustration Image: 300px mobile (mb-24px), 500px desktop/tablet (mb-48px) */}
           <div className="relative w-[300px] sm:w-[500px] aspect-[5/3] mb-[24px] sm:mb-[48px]">
             <Image
               src="/empty-state.png"
@@ -132,17 +166,14 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
             />
           </div>
 
-          {/* Title: 16px, fontweight 700 all breakpoints */}
           <h3 className="text-[16px] font-bold text-[#000000] mb-[8px] select-none">
             No components found
           </h3>
 
-          {/* Subtitle: 16px, fontweight 500, color #000000 50%, max-width 280px */}
           <p className="text-[16px] font-medium text-[#000000]/50 max-w-[280px] mb-[24px]">
             No components match your search or filter criteria. Try adjusting your search or clearing your filters.
           </p>
 
-          {/* Reset Filters Action Button */}
           <button
             onClick={handleResetFilters}
             type="button"
@@ -159,19 +190,37 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
         </section>
       )}
 
-      {hasMore && filteredSections.length > 0 && !hasActiveFilters && (
-        <div className="flex justify-center mt-10">
-          <Button
-            variant="primary"
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            className="!bg-[#E8E8E8] !text-primary-text hover:!opacity-80 border-none px-10 py-3 text-[14px] font-medium"
-          >
-            {isLoading ? 'Loading...' : 'Load More'}
-          </Button>
+      {/* Infinite Scroll Sentinel & Custom 4-Square Accent Loading Indicator */}
+      {hasMore && !hasActiveFilters && (
+        <div ref={observerRef} className="flex flex-col items-center justify-center pt-12 pb-6 select-none">
+          {/* 4 Accent Squares (8px x 8px each) fading from 100%, 75%, 50%, 25% with wave pulse animation */}
+          <div className="flex items-center gap-[6px] mb-[16px]">
+            <span
+              className="w-[8px] h-[8px] bg-[#E74E1B] block shrink-0"
+              style={{ animation: 'squarePulse 1.2s infinite ease-in-out 0s' }}
+            />
+            <span
+              className="w-[8px] h-[8px] bg-[#E74E1B] opacity-75 block shrink-0"
+              style={{ animation: 'squarePulse 1.2s infinite ease-in-out 0.2s' }}
+            />
+            <span
+              className="w-[8px] h-[8px] bg-[#E74E1B] opacity-50 block shrink-0"
+              style={{ animation: 'squarePulse 1.2s infinite ease-in-out 0.4s' }}
+            />
+            <span
+              className="w-[8px] h-[8px] bg-[#E74E1B] opacity-25 block shrink-0"
+              style={{ animation: 'squarePulse 1.2s infinite ease-in-out 0.6s' }}
+            />
+          </div>
+
+          {/* Text Loading below */}
+          <span className="font-bold text-[16px] text-[#000000]">
+            Loading
+          </span>
         </div>
       )}
     </div>
   )
 }
+
 
