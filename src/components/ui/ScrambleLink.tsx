@@ -118,12 +118,12 @@ export function ScrambleLink({
       href={href}
       onClick={onClick}
       onMouseEnter={playScramble}
-      className={`no-underline inline-flex items-center justify-center select-none cursor-pointer transition-colors duration-150 font-sans ${className}`}
+      className={`no-underline inline-flex items-center select-none cursor-pointer transition-colors duration-150 font-sans ${className}`}
       style={{ color: baseColor }}
     >
       <span
         ref={containerRef}
-        className="inline-flex whitespace-pre justify-center items-center overflow-hidden"
+        className="inline-flex whitespace-pre justify-start items-center overflow-hidden"
         style={{
           width: fixedWidth ? `${fixedWidth}px` : 'auto',
           minWidth: fixedWidth ? `${fixedWidth}px` : undefined,
@@ -131,6 +131,7 @@ export function ScrambleLink({
       >
         {displayChars.map((item, idx) => {
           const slotWidth = charWidths[idx]
+          const charToRender = item.char === ' ' ? '\u00A0' : item.char
           return (
             <span
               key={idx}
@@ -145,7 +146,7 @@ export function ScrambleLink({
                 transition: 'color 0.1s ease',
               }}
             >
-              {item.char}
+              {charToRender}
             </span>
           )
         })}

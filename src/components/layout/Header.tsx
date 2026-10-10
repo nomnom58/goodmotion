@@ -147,28 +147,28 @@ export function Header() {
           }`}
         >
           <div className="flex flex-col">
-            {/* Nav Links */}
-            <nav className="flex flex-col font-sans font-medium text-[20px] tracking-[-0.04em] uppercase">
+            {/* Nav Links - Left Aligned */}
+            <nav className="flex flex-col items-start text-left font-sans font-medium text-[20px] tracking-[-0.04em] uppercase">
               <ScrambleLink
                 href="/"
                 text="HOME"
                 isActive={isHomeActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px]"
+                className="py-[12px] w-full justify-start"
               />
               <ScrambleLink
                 href="/how-to-use"
                 text="HOW TO USE"
                 isActive={isHowToUseActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px]"
+                className="py-[12px] w-full justify-start"
               />
               <ScrambleLink
                 href="/about"
                 text="ABOUT ME"
                 isActive={isAboutActive}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-[12px]"
+                className="py-[12px] w-full justify-start"
               />
             </nav>
 
@@ -185,7 +185,7 @@ export function Header() {
               </a>
 
               <div className="flex flex-col gap-2 pt-1">
-                <h2 className="text-[20px] font-bold text-[#121212]">
+                <h2 className="text-[18px] font-bold text-[#121212]">
                   Unlock Unlimited Access
                 </h2>
                 <p className="text-[16px] font-normal text-black/75">
@@ -196,9 +196,9 @@ export function Header() {
                   <SignInButton mode="modal">
                     <button
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full py-3.5 px-6 bg-brand text-white font-medium text-[16px] rounded-full hover:opacity-90 transition-opacity cursor-pointer border-none text-center"
+                      className="w-full py-3.5 px-6 bg-[#E74E1B] text-white font-bold text-[16px] uppercase rounded-full hover:opacity-90 transition-opacity cursor-pointer border-none text-center select-none"
                     >
-                      Login / Signup
+                      LOGIN / SIGNUP
                     </button>
                   </SignInButton>
                 </div>
