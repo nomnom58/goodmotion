@@ -137,7 +137,7 @@ export function SectionCard({
     <Link
       href={`/section/${slug}`}
       data-cursor="visit"
-      className="group block transition-colors bg-white hover:bg-[#000000]/5 p-[24px] h-full"
+      className="group block transition-colors duration-200 bg-white hover:bg-[#000000]/5 p-[24px] h-full"
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => !isMobile && setIsHovered(false)}
     >

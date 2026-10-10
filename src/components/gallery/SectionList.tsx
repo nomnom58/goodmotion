@@ -13,6 +13,49 @@ interface SectionListProps {
   initialHasMore: boolean
 }
 
+function renderGridFillers(count: number) {
+  const mod6 = count % 6
+  if (mod6 === 0) return null
+
+  if (mod6 === 1) {
+    return (
+      <>
+        <div key="filler-1" className="bg-white w-full h-full hidden sm:block" aria-hidden="true" />
+        <div key="filler-2" className="bg-white w-full h-full hidden lg:block" aria-hidden="true" />
+      </>
+    )
+  }
+
+  if (mod6 === 2) {
+    return (
+      <div key="filler-1" className="bg-white w-full h-full hidden lg:block" aria-hidden="true" />
+    )
+  }
+
+  if (mod6 === 3) {
+    return (
+      <div key="filler-1" className="bg-white w-full h-full hidden sm:block lg:hidden" aria-hidden="true" />
+    )
+  }
+
+  if (mod6 === 4) {
+    return (
+      <>
+        <div key="filler-1" className="bg-white w-full h-full hidden lg:block" aria-hidden="true" />
+        <div key="filler-2" className="bg-white w-full h-full hidden lg:block" aria-hidden="true" />
+      </>
+    )
+  }
+
+  if (mod6 === 5) {
+    return (
+      <div key="filler-1" className="bg-white w-full h-full hidden sm:block" aria-hidden="true" />
+    )
+  }
+
+  return null
+}
+
 export function SectionList({ initialSections, initialHasMore }: SectionListProps) {
   const [sections, setSections] = useState<SectionCardData[]>(initialSections)
   const [searchQuery, setSearchQuery] = useState('')
@@ -187,6 +230,7 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
           {filteredSections.map((section) => (
             <SectionCard key={section.id} {...section} />
           ))}
+          {renderGridFillers(filteredSections.length)}
         </section>
       )}
 
