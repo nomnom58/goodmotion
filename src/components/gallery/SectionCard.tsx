@@ -26,7 +26,10 @@ export function SectionCard({
   const [isMobile, setIsMobile] = useState(false)
   const [isInView, setIsInView] = useState(false)
   const [isNearViewport, setIsNearViewport] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isMediaLoaded, setIsMediaLoaded] = useState(false)
+  const [isCardInView, setIsCardInView] = useState(false)
+  const [isCurtainWiped, setIsCurtainWiped] = useState(false)
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -43,11 +46,39 @@ export function SectionCard({
   // If no thumbnail available, mark as loaded immediately
   useEffect(() => {
     if (!thumbnailUrl && !videoUrl) {
-      setIsLoaded(true)
+      setIsMediaLoaded(true)
     }
   }, [thumbnailUrl, videoUrl])
 
-  // Intersection Observer for Lazy Rendering (Video)
+  // Scroll-Triggered Viewport Entrance Observer
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsCardInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.15 }
+    )
+
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  // Curtain Wipe Trigger: Wait until card is in viewport + media is loaded + 150ms (0.15s) hold delay
+  useEffect(() => {
+    if (isCardInView && isMediaLoaded) {
+      const timer = setTimeout(() => {
+        setIsCurtainWiped(true)
+      }, 150) // X = 150ms (0.15s) hold delay
+      return () => clearTimeout(timer)
+    }
+  }, [isCardInView, isMediaLoaded])
+
+  // Intersection Observer for Lazy Video Pre-rendering
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -99,7 +130,7 @@ export function SectionCard({
   const showVideo = !isMobile && isHovered && !!videoUrl && isNearViewport
 
   const handleMediaLoad = () => {
-    setIsLoaded(true)
+    setIsMediaLoaded(true)
   }
 
   return (
@@ -113,11 +144,11 @@ export function SectionCard({
       <div className="flex flex-col h-full" ref={containerRef}>
         {/* Container for Image/Video (16:9, rounded-none, bg-white) */}
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-white rounded-none">
-          {/* Accent Color (#E74E1B) Downward Slide Curtain Loading Effect */}
+          {/* Accent Color (#E74E1B) Scroll-Triggered Downward Curtain Wipe Loading Effect */}
           <div
             className={cn(
-              "absolute inset-0 bg-[#E74E1B] z-20 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none",
-              isLoaded ? "translate-y-[105%] opacity-0" : "translate-y-0 opacity-100"
+              "absolute inset-0 bg-[#E74E1B] z-20 transition-transform duration-[2500ms] ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none",
+              isCurtainWiped ? "translate-y-[105%]" : "translate-y-0"
             )}
           />
 
@@ -165,9 +196,9 @@ export function SectionCard({
           )}
         </div>
 
-        {/* Title (mt-16px, text-14px, font-medium, text-[#000000]) */}
+        {/* Title (mt-16px, text-16px, font-medium, text-[#000000]) */}
         <div className="mt-[16px] flex flex-col">
-          <h3 className="font-sans font-medium text-[14px] text-[#000000] select-none">
+          <h3 className="font-sans font-medium text-[16px] text-[#000000] select-none">
             {title}
           </h3>
         </div>
