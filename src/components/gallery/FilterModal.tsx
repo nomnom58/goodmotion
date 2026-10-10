@@ -18,6 +18,7 @@ interface FilterModalProps {
   onCategoryToggle: (category: string) => void
   onCategoryAllSelect: () => void
   onApplyMobileFilters?: (newStatus: string, newCategories: string[]) => void
+  triggerRef?: React.RefObject<HTMLElement | null>
   className?: string
 }
 
@@ -51,6 +52,7 @@ export function FilterModal({
   onCategoryToggle,
   onCategoryAllSelect,
   onApplyMobileFilters,
+  triggerRef,
   className = '',
 }: FilterModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
@@ -128,7 +130,8 @@ export function FilterModal({
       const target = event.target as Node
       if (
         modalRef.current?.contains(target) ||
-        mobileModalRef.current?.contains(target)
+        mobileModalRef.current?.contains(target) ||
+        triggerRef?.current?.contains(target)
       ) {
         return
       }
@@ -139,7 +142,7 @@ export function FilterModal({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, triggerRef])
 
   if (!isOpen) return null
 

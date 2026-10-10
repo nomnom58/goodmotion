@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, ChevronDown } from 'lucide-react'
 import { FilterModal, FilterState } from './FilterModal'
 
@@ -30,6 +30,7 @@ export function SearchFilterBar({
   const [searchQuery, setSearchQuery] = useState(value)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [placeholder, setPlaceholder] = useState('Search component...')
+  const filterButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setSearchQuery(value)
@@ -109,6 +110,7 @@ export function SearchFilterBar({
 
         {/* Filter Trigger Button */}
         <button
+          ref={filterButtonRef}
           onClick={() => setIsFilterOpen((prev) => !prev)}
           type="button"
           className="flex items-center gap-1.5 py-[4px] bg-transparent border-none outline-none cursor-pointer p-0 m-0 text-[16px] leading-none font-medium text-[#000000] hover:opacity-70 transition-opacity select-none"
@@ -133,6 +135,7 @@ export function SearchFilterBar({
           onCategoryToggle={onCategoryToggle}
           onCategoryAllSelect={onCategoryAllSelect}
           onApplyMobileFilters={onApplyMobileFilters}
+          triggerRef={filterButtonRef}
         />
       </div>
     </div>
