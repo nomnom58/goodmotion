@@ -17,15 +17,13 @@ export function Skeleton({ className }: SkeletonProps) {
 
 export function SectionSkeleton() {
   return (
-    <div className="flex flex-col gap-3">
-      {/* 16:9 aspect ratio skeleton */}
-      <div className="relative aspect-16-9 w-full overflow-hidden bg-tag-bg/30 rounded-sm">
-        <Skeleton className="h-full w-full" />
-      </div>
+    <div className="flex flex-col h-full bg-white p-[24px]">
+      {/* 16:9 aspect ratio thumbnail container with solid accent orange (#E74E1B) */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#E74E1B] rounded-none" />
 
-      <div className="flex flex-col gap-2">
-        {/* Title skeleton */}
-        <Skeleton className="h-5 w-3/4 rounded-sm" />
+      {/* Title skeleton */}
+      <div className="mt-[16px] flex flex-col">
+        <div className="h-5 w-2/3 bg-[#000000]/10 rounded-none animate-pulse" />
       </div>
     </div>
   )

@@ -1,42 +1,11 @@
-import { Suspense } from 'react'
 import { SectionList } from '@/components/gallery/SectionList'
-import { SectionSkeleton } from '@/components/ui/Skeleton'
 import { getSections } from '@/actions/sections'
 
 export const revalidate = 3600
 
-async function SectionGrid() {
-  const { success, data: sections, hasMore, error } = await getSections(6, 0)
+export default async function Home() {
+  const { success, data: sections, hasMore } = await getSections(6, 0)
 
-  if (!success || !sections || sections.length === 0) {
-    return (
-      <div className="col-span-full py-20 text-center">
-        <p className="text-secondary-text font-mono">
-          {error?.message || 'No sections found. Check back later!'}
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <SectionList 
-      initialSections={sections} 
-      initialHasMore={hasMore} 
-    />
-  )
-}
-
-function GridSkeleton() {
-  return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-x-4 gap-y-6 pb-20">
-      {[...Array(4)].map((_, i) => (
-        <SectionSkeleton key={i} />
-      ))}
-    </section>
-  )
-}
-
-export default function Home() {
   return (
     <div className="flex flex-col pt-0 sm:pt-0">
       {/* Hero Header */}
@@ -50,10 +19,11 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Main Grid with Suspense (includes SearchFilterBar) */}
-      <Suspense fallback={<GridSkeleton />}>
-        <SectionGrid />
-      </Suspense>
+      {/* Main Gallery List pre-rendered on Server */}
+      <SectionList 
+        initialSections={success && sections ? sections : []} 
+        initialHasMore={hasMore} 
+      />
     </div>
   )
 }
