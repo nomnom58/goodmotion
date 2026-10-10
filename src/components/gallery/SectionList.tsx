@@ -132,7 +132,7 @@ export function SectionList({ initialSections, initialHasMore }: SectionListProp
           </button>
         </div>
       ) : (
-        <section className="w-full border border-[#000000]/10 bg-[#000000]/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[1px]">
+        <section className="w-full border border-[#000000]/10 bg-[#000000]/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-[1px]">
           {filteredSections.map((section) => (
             <SectionCard key={section.id} {...section} />
           ))}
