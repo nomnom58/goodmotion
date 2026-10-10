@@ -59,7 +59,7 @@ export function Header() {
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 px-[8px] py-[5px] hover:opacity-70 transition-opacity"
+                className="flex items-center gap-1.5 px-[8px] py-[5px] text-[#121212] hover:text-[#E74E1B] transition-colors"
               >
                 <GithubIcon size={16} />
                 <span>0</span>
@@ -70,15 +70,15 @@ export function Header() {
                   <Show when="signed-out">
                     <div className="flex items-center gap-1 px-[8px] py-[5px] font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
                       <SignInButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
-                          LOGIN
-                        </button>
+                        <span className="cursor-pointer">
+                          <ScrambleLink href="#" text="LOGIN" className="px-[4px] py-[2px]" />
+                        </span>
                       </SignInButton>
                       <span className="opacity-40">/</span>
                       <SignUpButton mode="modal">
-                        <button className="hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
-                          SIGNUP
-                        </button>
+                        <span className="cursor-pointer">
+                          <ScrambleLink href="#" text="SIGNUP" className="px-[4px] py-[2px]" />
+                        </span>
                       </SignUpButton>
                     </div>
                   </Show>
@@ -95,9 +95,9 @@ export function Header() {
                 </>
               ) : (
                 <SignInButton mode="modal">
-                  <button className="px-[8px] py-[5px] hover:opacity-70 transition-opacity cursor-pointer border-none bg-transparent p-0 m-0 font-sans font-medium text-[14px] text-[#121212] tracking-[-0.04em] uppercase">
-                    LOGIN / SIGNUP
-                  </button>
+                  <span className="cursor-pointer">
+                    <ScrambleLink href="#" text="LOGIN / SIGNUP" className="px-[8px] py-[5px]" />
+                  </span>
                 </SignInButton>
               )}
             </div>

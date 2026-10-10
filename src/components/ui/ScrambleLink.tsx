@@ -40,14 +40,45 @@ export function ScrambleLink({
   const [displayChars, setDisplayChars] = useState<CharItem[]>(() =>
     targetText.split('').map((c) => ({ char: c, isScrambled: false }))
   )
+  const [fixedWidth, setFixedWidth] = useState<number | null>(null)
+  const [charWidths, setCharWidths] = useState<number[]>([])
+
   const tweenRef = useRef<gsap.core.Tween | null>(null)
+  const containerRef = useRef<HTMLSpanElement>(null)
+  const charRefs = useRef<(HTMLSpanElement | null)[]>([])
+
+  const measureWidths = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      if (rect.width > 0) {
+        setFixedWidth(rect.width)
+      }
+    }
+    if (charRefs.current && charRefs.current.length > 0) {
+      const widths = charRefs.current.map((el) => {
+        if (!el) return 0
+        return el.getBoundingClientRect().width
+      })
+      if (widths.length > 0 && widths.every((w) => w > 0)) {
+        setCharWidths(widths)
+      }
+    }
+  }
 
   useEffect(() => {
     if (tweenRef.current) tweenRef.current.kill()
     setDisplayChars(targetText.split('').map((c) => ({ char: c, isScrambled: false })))
+    setFixedWidth(null)
+    setCharWidths([])
+    const timer = setTimeout(measureWidths, 80)
+    return () => clearTimeout(timer)
   }, [targetText])
 
   const playScramble = () => {
+    if (!fixedWidth || charWidths.length === 0) {
+      measureWidths()
+    }
+
     if (tweenRef.current) tweenRef.current.kill()
 
     const len = targetText.length
@@ -87,21 +118,37 @@ export function ScrambleLink({
       href={href}
       onClick={onClick}
       onMouseEnter={playScramble}
-      className={`no-underline inline-flex items-center select-none cursor-pointer transition-colors duration-150 ${className}`}
+      className={`no-underline inline-flex items-center justify-center select-none cursor-pointer transition-colors duration-150 font-sans ${className}`}
       style={{ color: baseColor }}
     >
-      <span className="inline-flex whitespace-pre">
-        {displayChars.map((item, idx) => (
-          <span
-            key={idx}
-            style={{
-              color: item.isScrambled ? accentColor : baseColor,
-              transition: 'color 0.1s ease',
-            }}
-          >
-            {item.char}
-          </span>
-        ))}
+      <span
+        ref={containerRef}
+        className="inline-flex whitespace-pre justify-center items-center overflow-hidden"
+        style={{
+          width: fixedWidth ? `${fixedWidth}px` : 'auto',
+          minWidth: fixedWidth ? `${fixedWidth}px` : undefined,
+        }}
+      >
+        {displayChars.map((item, idx) => {
+          const slotWidth = charWidths[idx]
+          return (
+            <span
+              key={idx}
+              ref={(el) => {
+                charRefs.current[idx] = el
+              }}
+              className="inline-flex justify-center items-center text-center overflow-hidden"
+              style={{
+                width: slotWidth && slotWidth > 0 ? `${slotWidth}px` : 'auto',
+                minWidth: slotWidth && slotWidth > 0 ? `${slotWidth}px` : undefined,
+                color: item.isScrambled ? accentColor : baseColor,
+                transition: 'color 0.1s ease',
+              }}
+            >
+              {item.char}
+            </span>
+          )
+        })}
       </span>
     </Link>
   )
