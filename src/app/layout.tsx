@@ -50,7 +50,7 @@ export default function RootLayout({
           <body className="min-h-full flex flex-col bg-[#F2F2F2] text-primary-text font-sans selection:bg-brand/10 selection:text-brand">
             <ToastProvider>
               <CustomCursor />
-              <div className="max-w-[1440px] mx-auto w-full min-h-screen flex flex-col bg-white border-x border-[#000000]/10">
+              <div className="max-w-[1440px] mx-auto w-full min-h-screen flex flex-col bg-white border-x-0 md:border-x border-[#000000]/10">
                 <Header />
 
                 <main className="flex-1 w-full px-4 pb-5 pt-4">
